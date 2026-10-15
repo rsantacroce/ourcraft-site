@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ourcraft Manual</title>
+  <meta name="description" content="How to play Ourcraft and the Splat Squad team game: controls, building, multiplayer, servers, settings and mods.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="./"><span class="logo-block" aria-hidden="true"></span>Ourcraft</a>
+    <nav class="nav" aria-label="Main">
+      <a href="./#features">Features</a>
+      <a href="./#screenshots">Screenshots</a>
+      <a href="./#splat-squad">Splat Squad</a>
+      <a href="manual.html" aria-current="page">Manual</a>
+      <a href="https://github.com/rsantacroce/ourcraft">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="manual">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#install">Getting started</a></li>
+      <li><a href="#menu">The main menu</a></li>
+      <li><a href="#controls">Controls</a></li>
+      <li><a href="#playing">Playing Ourcraft</a>
+        <ol>
+          <li><a href="#moving">Moving around</a></li>
+          <li><a href="#building">Building and breaking</a></li>
+          <li><a href="#inventory">Hotbar and inventory</a></li>
+          <li><a href="#modes">Creative and survival</a></li>
+          <li><a href="#world">The world</a></li>
+          <li><a href="#blocks">Blocks</a></li>
+        </ol>
+      </li>
+      <li><a href="#friends">Playing with friends</a></li>
+      <li><a href="#splat-squad">Playing Splat Squad</a>
+        <ol>
+          <li><a href="#squad-start">Starting a match</a></li>
+          <li><a href="#squad-classes">The classes</a></li>
+          <li><a href="#squad-how">How to play</a></li>
+          <li><a href="#squad-rules">Rules</a></li>
+          <li><a href="#squad-tips">Tips</a></li>
+        </ol>
+      </li>
+      <li><a href="#paint">The Paint Blocks mod</a></li>
+      <li><a href="#chat">Chat and commands</a></li>
+      <li><a href="#settings">Settings</a></li>
+      <li><a href="#servers">Running a server</a></li>
+      <li><a href="#mods">Mods</a></li>
+      <li><a href="#mobile">iPad and Android</a></li>
+      <li><a href="#parents">For parents</a></li>
+      <li><a href="#help">Problems and questions</a></li>
+    </ol>
+  </nav>
+
+  <article>
+    <h1>Ourcraft Manual</h1>
+    <p>Everything you need to play Ourcraft and its team game, Splat Squad. New players can
+      start with <a href="#install">Getting started</a> and <a href="#controls">Controls</a>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="install">1. Getting started</h2>
+    <p>Ourcraft is built from its source code with Rust. This takes a few minutes the first
+      time; after that it starts in seconds.</p>
+    <ol class="steps">
+      <li>Install Rust from <a href="https://rustup.rs">rustup.rs</a> (one command; accept the
+        defaults).</li>
+      <li>Get the game:
+        <pre><code>git clone https://github.com/rsantacroce/ourcraft
+cd ourcraft</code></pre></li>
+      <li>Start it:
+        <pre><code>cargo run --release</code></pre>
+        You'll land on the <a href="#menu">main menu</a>.</li>
+    </ol>
+    <div class="note"><strong>Linux:</strong> you may need these packages first (Ubuntu/Debian
+      names): <code>sudo apt install pkg-config libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev</code></div>
+    <div class="tip"><strong>Shortcuts.</strong> You can skip the menu from the command line:
+      <code>cargo run --release -- --world "My World"</code> opens (or creates) a world, and
+      <code>--connect 192.168.1.20 --name Sam</code> joins a friend.</div>
+
+    <!-- ============================================================ -->
+    <h2 id="menu">2. The main menu</h2>
+    <img src="images/menu.jpg" alt="The main menu" width="1280" height="720" loading="lazy">
+    <ul>
+      <li><strong>Play</strong> lists your worlds. Click one to continue it, or
+        <strong>+ New world</strong> to make one.</li>
+      <li><strong>Join a friend</strong> shows games on your home network, or lets you type an
+        address.</li>
+      <li><strong>Settings</strong>: your name, view distance, sound and more (see
+        <a href="#settings">Settings</a>).</li>
+      <li><strong>Quit</strong> closes the game. Your worlds are saved.</li>
+    </ul>
+    <h3>Making a new world</h3>
+    <ul>
+      <li><strong>Name</strong>: anything you like, or press <em>Pick a random name</em>.</li>
+      <li><strong>Seed</strong> (optional): a number that decides what the land looks like. The
+        same seed always makes the same world, so you can share good ones with friends.</li>
+      <li><strong>Game</strong>: <em>Build</em> for free play, or <em>Splat Squad</em> for the
+        <a href="#splat-squad">team game</a>.</li>
+      <li><strong>Creative / Survival</strong> (Build only): see
+        <a href="#modes">Creative and survival</a>.</li>
+      <li><strong>Friends on my network can join</strong>: switch on to let people on the same
+        Wi-Fi join you.</li>
+    </ul>
+    <p>In a world, press <kbd>Esc</kbd> (or the <em>Menu</em> button on touch screens) for the
+      pause menu: <em>Back to game</em>, <em>Settings</em>, or <em>Save and quit to title</em>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="controls">3. Controls</h2>
+    <p>Click inside the game window to capture the mouse; press <kbd>Esc</kbd> to get it back.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>Keyboard &amp; mouse</th><th>Gamepad</th><th>Touch</th></tr></thead>
+      <tbody>
+        <tr><td>Walk</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td><td>Left stick</td><td>Thumb on the left side, drag</td></tr>
+        <tr><td>Look around</td><td>Move the mouse</td><td>Right stick</td><td>Drag on the right side</td></tr>
+        <tr><td>Jump</td><td><kbd>Space</kbd></td><td>A</td><td><em>Jump</em> button (steps are climbed automatically)</td></tr>
+        <tr><td>Run</td><td><kbd>Ctrl</kbd></td><td>Click the left stick</td><td>Push the joystick all the way</td></tr>
+        <tr><td>Fly on / off (creative)</td><td>Double-tap <kbd>Space</kbd>, or <kbd>F</kbd></td><td>X</td><td><em>Fly</em> button</td></tr>
+        <tr><td>Fly or swim up / down</td><td><kbd>Space</kbd> / <kbd>Shift</kbd></td><td>A / B</td><td><em>Jump</em> / <em>Down</em></td></tr>
+        <tr><td>Break a block / use a gadget</td><td>Left click (hold to repeat)</td><td>Right trigger</td><td>Press and hold</td></tr>
+        <tr><td>Place a block</td><td>Right click</td><td>Left trigger</td><td>Quick tap</td></tr>
+        <tr><td>Copy the block you're looking at (creative)</td><td>Middle click</td><td>D-pad up</td><td></td></tr>
+        <tr><td>Choose a hotbar slot</td><td><kbd>1</kbd>–<kbd>9</kbd> or mouse wheel</td><td>Bumpers</td><td>Tap the slot</td></tr>
+        <tr><td>Inventory</td><td><kbd>E</kbd></td><td>Y</td><td><em>Bag</em> button</td></tr>
+        <tr><td>Chat / command</td><td><kbd>Enter</kbd> / <kbd>/</kbd></td><td></td><td></td></tr>
+        <tr><td>Pause menu</td><td><kbd>Esc</kbd></td><td></td><td><em>Menu</em> button</td></tr>
+        <tr><td>Show or hide info text</td><td><kbd>F3</kbd></td><td></td><td></td></tr>
+        <tr><td>View distance</td><td><kbd>[</kbd> and <kbd>]</kbd></td><td></td><td>In Settings</td></tr>
+        <tr><td>Skip ahead an hour</td><td><kbd>T</kbd></td><td></td><td></td></tr>
+        <tr><td>Creative ↔ survival</td><td><kbd>G</kbd></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="playing">4. Playing Ourcraft</h2>
+    <img src="images/vista.jpg" alt="A view over hills, forest and a beach" width="1600" height="900" loading="lazy">
+
+    <h3 id="moving">Moving around</h3>
+    <p>Walk with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> and look with the mouse. You can
+      jump up one block at a time. In water you float: hold <kbd>Space</kbd> to swim up. In
+      creative mode, double-tap <kbd>Space</kbd> to fly, and land by flying down onto the ground.</p>
+
+    <h3 id="building">Building and breaking</h3>
+    <ul>
+      <li>The <strong>+</strong> in the middle of the screen is where you're aiming. The block
+        you'd change gets a thin outline (you can reach about 6 blocks).</li>
+      <li><strong>Left click</strong> breaks the block. Hold the button to keep breaking.</li>
+      <li><strong>Right click</strong> places the block from your selected hotbar slot against
+        the face you're pointing at. You can't place a block where you or another player is
+        standing.</li>
+      <li>Bedrock, the dark stone at the very bottom of the world, can't be broken.</li>
+    </ul>
+
+    <h3 id="inventory">Hotbar and inventory</h3>
+    <p>The nine squares at the bottom are your <strong>hotbar</strong>. The selected one has a white
+      border, and its name shows above it. Press <kbd>E</kbd> to open the inventory.</p>
+    <img src="images/inventory.jpg" alt="The creative block picker" width="1600" height="900" loading="lazy">
+    <ul>
+      <li><strong>Creative:</strong> every block is shown. Click one to put it in your selected
+        hotbar slot.</li>
+      <li><strong>Survival:</strong> you see your 27 storage slots. Click one to swap it with
+        your selected hotbar slot.</li>
+    </ul>
+
+    <h3 id="modes">Creative and survival</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Creative</th><th>Survival</th></tr></thead>
+      <tbody>
+        <tr><td>Blocks</td><td>Endless supply of every block</td><td>Only what you collect; placing uses it up</td></tr>
+        <tr><td>Breaking</td><td>Blocks just disappear</td><td>The block goes into your inventory (stone gives cobblestone, grass gives dirt)</td></tr>
+        <tr><td>Flying</td><td>Yes</td><td>No</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Pick one when you make a world. You can switch any time with <kbd>G</kbd>.</p>
+
+    <h3 id="world">The world</h3>
+    <ul>
+      <li><strong>Biomes:</strong> green plains, thick forests, sandy deserts with cacti, snowy
+        lands, and tall rocky mountains with snow on top. Low land is filled with lakes and seas
+        with sandy beaches.</li>
+      <li><strong>Caves</strong> wind underground. Some open up at the surface.</li>
+      <li><strong>Day and night:</strong> a full day lasts 20 minutes. Sunsets turn the sky
+        orange; nights are dark blue. Lamps glow in the dark.</li>
+      <li><strong>It never ends:</strong> new land appears as you travel. Far-off land fades into
+        the sky; raise the view distance to see further.</li>
+      <li><strong>Saving</strong> is automatic every 30 seconds, and again when you quit.</li>
+    </ul>
+
+    <h3 id="blocks">Blocks</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Block</th><th>Where to find it / notes</th></tr></thead>
+      <tbody>
+        <tr><td>Grass, Dirt</td><td>Everywhere on the surface</td></tr>
+        <tr><td>Stone, Cobblestone</td><td>Under the dirt; breaking stone gives cobblestone</td></tr>
+        <tr><td>Sand</td><td>Deserts and beaches</td></tr>
+        <tr><td>Gravel</td><td>The bottom of lakes and seas</td></tr>
+        <tr><td>Log, Leaves, Planks</td><td>Trees; planks are for building</td></tr>
+        <tr><td>Snowy Grass</td><td>Snowy lands and mountain tops</td></tr>
+        <tr><td>Cactus</td><td>Deserts</td></tr>
+        <tr><td>Glass</td><td>See-through, great for windows</td></tr>
+        <tr><td>Bricks</td><td>For houses and walls</td></tr>
+        <tr><td>Lamp</td><td>Glows, even at night</td></tr>
+        <tr><td>Water</td><td>Lakes and seas; you can swim in it</td></tr>
+        <tr><td>Bedrock</td><td>The bottom of the world; can't be broken</td></tr>
+        <tr><td>Paint (8 colours), Rainbow Lamp</td><td>From the <a href="#paint">Paint Blocks mod</a></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="friends">5. Playing with friends</h2>
+    <h3>On the same Wi-Fi (easiest)</h3>
+    <ol class="steps">
+      <li>The host makes or opens a world with <strong>Friends on my network can join</strong>
+        switched on (on the <em>Play</em> or <em>New world</em> screen).</li>
+      <li>Everyone else chooses <strong>Join a friend</strong> on the main menu. The host's game
+        appears in the list after a second or two; click it.</li>
+    </ol>
+    <h3>By address</h3>
+    <p>On the <em>Join a friend</em> screen, type the host's address (for example
+      <code>192.168.1.20</code>, or <code>host:port</code>) and press <em>Join</em>. The standard
+      port is <strong>41700</strong> (UDP). To play over the internet, the host needs to forward
+      that port on their router, or run a <a href="#servers">server</a> somewhere reachable.</p>
+    <h3>What you'll see</h3>
+    <p>Other players appear as blocky characters with their name above their head. Every block
+      anyone breaks or places shows up for everyone right away. Change your name in
+      <a href="#settings">Settings</a> before joining.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="splat-squad">6. Playing Splat Squad</h2>
+    <img src="images/splat2.jpg" alt="A red player next to the red flag" width="1600" height="900" loading="lazy">
+    <p>Splat Squad is a team game for two or more players. It's a mod that comes with Ourcraft.
+      Two teams, <span class="team-red" style="color:var(--red)"><strong>Red</strong></span> and
+      <strong style="color:var(--blue)">Blue</strong>, each have a base with a flag. Bring the
+      other team's flag home to score; the first team to <strong>3</strong> wins the round.</p>
+
+    <h3 id="squad-start">Starting a match</h3>
+    <ol class="steps">
+      <li>Main menu → <strong>Play</strong> → <strong>+ New world</strong>.</li>
+      <li>Click <em>Game</em> until it says <strong>Splat Squad</strong>.</li>
+      <li>Switch on <strong>Friends on my network can join</strong>, and press <strong>Create and
+        play</strong>.</li>
+      <li>Friends choose <strong>Join a friend</strong> and pick your game.</li>
+    </ol>
+    <p>Two bases appear, about 44 blocks apart: a red one and a blue one, each with a coloured
+      platform, low walls, lamps, and a flag on a pole. Players are put on the smaller team
+      automatically. Splat Squad worlds can also be run on a server with
+      <code>--mode team_shooter</code>.</p>
+
+    <h3 id="squad-classes">The classes</h3>
+    <p>When you join, your hotbar shows four class badges. Select one (keys <kbd>1</kbd>–<kbd>4</kbd>,
+      or tap it) and click to become that class. Your hotbar then holds your gadget. You can
+      change class any time with <code>/class name</code>.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Class</th><th>Paint</th><th>Speed</th><th>Gadget</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dasher</strong></td><td>80</td><td>Fast</td><td>Splat Blaster</td><td>Rapid little paint pellets (16 each, about 6 shots a second). Fast and straight.</td></tr>
+        <tr><td><strong>Bulwark</strong></td><td>170</td><td>Slow</td><td>Bubble Cannon</td><td>Big, slow bubbles (42 each, about one a second). Hard to stop.</td></tr>
+        <tr><td><strong>Lobber</strong></td><td>110</td><td>Normal</td><td>Paint Lobber</td><td>Bombs that fly in an arc (30 on a direct hit) and splash everyone within 3 blocks (up to 40).</td></tr>
+        <tr><td><strong>Patcher</strong></td><td>100</td><td>Quick</td><td>Mend Beam</td><td>A short beam (14 blocks): refills a teammate's paint, or gives an opponent a little splash.</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3 id="squad-how">How to play</h3>
+    <ol class="steps">
+      <li><strong>Pick a class</strong> from the badges.</li>
+      <li><strong>Head for the other team's base.</strong> The scoreboard in the top right shows
+        the score and whether your own flag is safe.</li>
+      <li><strong>Touch their flag</strong> to grab it. It floats above your head, and everyone
+        is told.</li>
+      <li><strong>Run home</strong> and touch your own flag to score. This only works while your
+        own flag is safe at your base.</li>
+      <li><strong>Defend.</strong> If someone takes your flag, splat them to make them drop it,
+        then touch it to send it home.</li>
+    </ol>
+    <img src="images/splat3.jpg" alt="Paint pellets flying towards the blue base" width="1600" height="900" loading="lazy">
+
+    <h3 id="squad-rules">Rules</h3>
+    <ul>
+      <li><strong>Paint meter:</strong> the bar above your hotbar. Getting hit by the other team
+        drains it. You can't hurt your own team.</li>
+      <li><strong>Splatted:</strong> when the meter is empty you pop in a puff of confetti, drop
+        any flag you carry, and wait at your base for 5 seconds. Then you're back with a full
+        meter.</li>
+      <li><strong>Dropped flags</strong> stay where they fall. The flag's own team returns it by
+        touching it; otherwise it goes home on its own after 20 seconds. The other team can pick
+        it up again.</li>
+      <li><strong>Winning:</strong> the first team to 3 captures wins the round. After a short
+        celebration, everyone respawns and a new round begins.</li>
+      <li>No building, breaking or flying during Splat Squad, so the arena stays fair.</li>
+    </ul>
+
+    <h3 id="squad-tips">Tips</h3>
+    <ul>
+      <li><strong>Dasher:</strong> you're the best flag runner. Don't stop to fight; dodge and run.</li>
+      <li><strong>Bulwark:</strong> stand near your flag and block the way in. Lead your shots:
+        bubbles are slow.</li>
+      <li><strong>Lobber:</strong> aim high to throw over walls, and into groups for big splashes.</li>
+      <li><strong>Patcher:</strong> follow your flag runner and keep their meter full.</li>
+      <li>Teams work best with a mix: someone guarding, someone running, someone helping.</li>
+    </ul>
+    <h3>Splat Squad commands</h3>
+    <ul>
+      <li><code>/class dasher</code> (or <code>bulwark</code>, <code>lobber</code>, <code>patcher</code>): change class.</li>
+      <li><code>/team</code>: switch to the other team.</li>
+      <li><code>/score</code>: show the score.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="paint">7. The Paint Blocks mod</h2>
+    <img src="images/rainbow.jpg" alt="A rainbow made of blocks" width="1600" height="900" loading="lazy">
+    <p>Also included with the game. It adds eight bright <strong>paint</strong> blocks (red,
+      orange, yellow, lime, blue, purple, pink, white) and a glowing <strong>Rainbow Lamp</strong>.
+      You'll find them in the inventory (<kbd>E</kbd>) in creative mode.</p>
+    <p>Type <code>/rainbow</code> in chat and a rainbow appears in front of you. It only fills empty
+      air, so it never covers anyone's buildings.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="chat">8. Chat and commands</h2>
+    <p>Press <kbd>Enter</kbd>, type, and press <kbd>Enter</kbd> again to send (<kbd>Esc</kbd>
+      cancels). Messages fade after a few seconds. Lines starting with <code>/</code> are
+      commands:</p>
+    <ul>
+      <li><code>/help</code>: list commands.</li>
+      <li><code>/time day</code> and <code>/time night</code>: change the time for everyone.</li>
+      <li><code>/rainbow</code>: Paint Blocks mod.</li>
+      <li><code>/class</code>, <code>/team</code>, <code>/score</code>: Splat Squad.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="settings">9. Settings</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Your name</td><td>What other players see above your head</td></tr>
+        <tr><td>View distance</td><td>How far you can see (in chunks of 16 blocks). Lower it if the game feels slow</td></tr>
+        <tr><td>Look sensitivity</td><td>How fast the view turns with the mouse</td></tr>
+        <tr><td>Sound volume</td><td>All game sounds</td></tr>
+        <tr><td>Touch controls</td><td>Automatic (shown on touch screens), on, or off</td></tr>
+        <tr><td>Hide rude words in chat</td><td>On by default</td></tr>
+        <tr><td>Show info text</td><td>The FPS, position and help text in the corner (also <kbd>F3</kbd>)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Settings are saved in <code>settings.txt</code> next to your worlds folder:</p>
+    <ul>
+      <li>macOS: <code>~/Library/Application Support/Ourcraft/</code></li>
+      <li>Windows: <code>%APPDATA%\Ourcraft\</code></li>
+      <li>Linux: <code>~/.local/share/ourcraft/</code></li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="servers">10. Running a server</h2>
+    <p>A dedicated server keeps a world running for everyone, with no window and very little
+      memory.</p>
+    <pre><code>cargo run --release -p ourcraft_server --bin ourcraft-server -- --world world</code></pre>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>--world NAME</code></td><td>World folder under <code>./worlds/</code> (created if new)</td></tr>
+        <tr><td><code>--port 41700</code></td><td>UDP port to listen on</td></tr>
+        <tr><td><code>--mode team_shooter</code></td><td>Make a new world a Splat Squad world</td></tr>
+        <tr><td><code>--survival</code></td><td>Make a new world survival instead of creative</td></tr>
+        <tr><td><code>--seed N</code></td><td>Seed for a new world</td></tr>
+        <tr><td><code>--name "…"</code>, <code>--motd "…"</code></td><td>Server name and welcome message</td></tr>
+        <tr><td><code>--view-distance 10</code></td><td>Most chunks sent to each player</td></tr>
+        <tr><td><code>--max-players 16</code></td><td>Player limit</td></tr>
+        <tr><td><code>--mods FOLDER</code></td><td>Extra mods to load (default <code>./mods</code>)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Press <kbd>Ctrl</kbd>+<kbd>C</kbd> to save and stop. Servers on your network show up on the
+      <em>Join a friend</em> screen automatically.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="mods">11. Mods</h2>
+    <p>Mods are small programs (WebAssembly files ending in <code>.wasm</code>) that add blocks,
+      gadgets and game modes. Ourcraft comes with two: <a href="#paint">Paint Blocks</a> and
+      <a href="#splat-squad">Splat Squad</a>.</p>
+    <ul>
+      <li><strong>Adding a mod:</strong> put its <code>.wasm</code> file in the <code>mods</code>
+        folder next to your worlds folder (or next to a dedicated server), and restart.</li>
+      <li><strong>Safety:</strong> mods can't read your files or use the internet. They can only
+        use the game's mod API. Each one has limits on time and memory, and a mod that misbehaves
+        is switched off.</li>
+      <li><strong>Making mods:</strong> mods are written in Rust. Start with the guide in
+        <a href="https://github.com/rsantacroce/ourcraft/tree/main/mods">mods/README.md</a> and read
+        the Paint Blocks mod; it's short and commented. Textures can be drawn as "pixel art"
+        text, 16 rows of 16 characters.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="mobile">12. iPad and Android</h2>
+    <img src="images/ipad.jpg" alt="Ourcraft on an iPad" width="1600" height="1102" loading="lazy">
+    <ul>
+      <li><strong>Moving:</strong> put your thumb anywhere on the left side and drag. Push all
+        the way to run. You hop up steps automatically.</li>
+      <li><strong>Looking:</strong> drag anywhere on the right side.</li>
+      <li><strong>Building:</strong> a quick tap places a block; press and hold to break.</li>
+      <li><strong>Buttons:</strong> <em>Jump</em>, <em>Down</em>, <em>Fly</em> (creative),
+        <em>Bag</em> (inventory, top right) and <em>Menu</em> (top left). Tap a hotbar slot to
+        select it.</li>
+      <li><strong>Splat Squad:</strong> tap or hold to use your gadget.</li>
+    </ul>
+    <p><strong>Installing:</strong> iPad/iPhone builds come from the Xcode project in
+      <code>mobile/ios</code>; Android builds from <code>mobile/android/build.sh</code>. See the
+      project's README for details.</p>
+    <div class="note">Typing isn't supported on phones and tablets yet: use <em>Pick a random
+      name</em> for new worlds, and the network list to join friends.</div>
+
+    <!-- ============================================================ -->
+    <h2 id="parents">13. For parents</h2>
+    <ul>
+      <li><strong>No accounts, no ads, no purchases.</strong> Nothing to sign up for.</li>
+      <li><strong>Private by default.</strong> Single-player worlds are on your device only.
+        Others can join only if you switch on <em>Friends on my network can join</em> (same
+        network) or you run a server.</li>
+      <li><strong>Gentle combat.</strong> Splat Squad uses paint and confetti: no blood, no
+        weapons that look real.</li>
+      <li><strong>Chat filter</strong> for rude words, on by default (Settings).</li>
+      <li><strong>Open source:</strong> you can read every line of the game on
+        <a href="https://github.com/rsantacroce/ourcraft">GitHub</a>.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="help">14. Problems and questions</h2>
+    <h3>The game feels slow</h3>
+    <p>Lower the view distance in Settings (or press <kbd>[</kbd>). Make sure you started it with
+      <code>--release</code>; without it the game runs much slower.</p>
+    <h3>My friend's game doesn't appear in "Join a friend"</h3>
+    <p>Check that the host switched on <em>Friends on my network can join</em>, that you're on the
+      same Wi-Fi, and that a firewall isn't blocking UDP ports 41700 and 41701. You can always type
+      the host's address instead. On iPhone and iPad the list may stay empty; typing the address
+      works.</p>
+    <h3>"Your game version doesn't match the server"</h3>
+    <p>Everyone needs the same version of Ourcraft. Update with <code>git pull</code> and start the
+      game again.</p>
+    <h3>The mouse won't move the view</h3>
+    <p>Click inside the game window to capture the mouse. <kbd>Esc</kbd> releases it.</p>
+    <h3>Where are my worlds?</h3>
+    <p>In the <code>worlds</code> folder next to <code>settings.txt</code> (see
+      <a href="#settings">Settings</a>). Each world is one folder; copy it to back it up.</p>
+    <h3>Something else?</h3>
+    <p>Open an issue on <a href="https://github.com/rsantacroce/ourcraft/issues">GitHub</a>.</p>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Ourcraft is free and open source (MIT). All art, sounds and names are original.</span>
+    <span><a href="./">Home</a> · <a href="https://github.com/rsantacroce/ourcraft">Source code</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
