@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ourcraft Modding Guide</title>
+  <meta name="description" content="How to make Ourcraft mods in Rust: a step-by-step tutorial, recipes, and the full mod API reference.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="logo" href="./"><span class="logo-block" aria-hidden="true"></span>Ourcraft</a>
+    <nav class="nav" aria-label="Main">
+      <a href="./#features">Features</a>
+      <a href="./#splat-squad">Splat Squad</a>
+      <a href="manual.html">Manual</a>
+      <a href="modding.html" aria-current="page">Modding</a>
+      <a href="https://github.com/rsantacroce/ourcraft">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="manual">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#what">What a mod can do</a></li>
+      <li><a href="#setup">What you need</a></li>
+      <li><a href="#first">Your first mod</a></li>
+      <li><a href="#how">How mods work</a></li>
+      <li><a href="#tutorial">Tutorial: Snow Fun</a>
+        <ol>
+          <li><a href="#step1">Say hello</a></li>
+          <li><a href="#step2">New blocks</a></li>
+          <li><a href="#step3">A chat command</a></li>
+          <li><a href="#step4">A snowball thrower</a></li>
+        </ol>
+      </li>
+      <li><a href="#recipes">More recipes</a></li>
+      <li><a href="#game-modes">Making a game mode</a></li>
+      <li><a href="#reference">API reference</a>
+        <ol>
+          <li><a href="#ref-events">Events</a></li>
+          <li><a href="#ref-functions">Functions</a></li>
+          <li><a href="#ref-types">Types</a></li>
+          <li><a href="#ref-names">Blocks and sounds</a></li>
+        </ol>
+      </li>
+      <li><a href="#rules">Rules and limits</a></li>
+      <li><a href="#testing">Testing and debugging</a></li>
+      <li><a href="#sharing">Sharing your mod</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+      <li><a href="#abi">Other languages</a></li>
+    </ol>
+  </nav>
+
+  <article>
+    <h1>Modding Guide</h1>
+    <p>Make Ourcraft your own: new blocks, gadgets, chat commands and whole new games. This guide
+      starts from nothing and builds a real mod step by step. You'll need to be comfortable typing
+      commands in a terminal; a little Rust helps, but you can learn it as you go by changing
+      the examples.</p>
+    <div class="tip"><strong>Grown-up and kid team?</strong> A great way to start is for the kid to
+      design (the block colours, what a command should do, the rules of a game) and the grown-up
+      to type. Pixel art for textures is just letters in a grid, which kids can draw on squared
+      paper first.</div>
+
+    <!-- ============================================================ -->
+    <h2 id="what">1. What a mod can do</h2>
+    <ul>
+      <li><strong>Blocks:</strong> new blocks with your own 16×16 textures, see-through or
+        glowing.</li>
+      <li><strong>Chat commands:</strong> type <code>/something</code> and the mod does it (like
+        <code>/rainbow</code> from Paint Blocks).</li>
+      <li><strong>Building for you:</strong> read and change any block in the world.</li>
+      <li><strong>Tools and projectiles:</strong> put gadgets in players' hotbars; throw, shoot or
+        lob things that fly and hit blocks or players.</li>
+      <li><strong>Players:</strong> teleport them, change their speed, flying and building,
+        give them a shirt colour and a name tag, show a health bar.</li>
+      <li><strong>Screen:</strong> chat messages, big titles, a text panel (HUD), particles and
+        sounds.</li>
+      <li><strong>Game modes:</strong> all of the above together make a game with rules. The
+        whole Splat Squad team game is a mod.</li>
+    </ul>
+    <p>Mods run <strong>on the server</strong> only. When friends join your world, their game
+      gets your new blocks and tools automatically: they don't need to install anything.</p>
+    <p>Mods can't do anything else. They can't read files, use the internet or see the clock.
+      That's what makes it safe to try mods other people made.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="setup">2. What you need</h2>
+    <ol class="steps">
+      <li>The game's source and Rust, as in <a href="manual.html#install">Getting started</a>.</li>
+      <li>The WebAssembly target for Rust, which turns your mod into a <code>.wasm</code> file:
+        <pre><code>rustup target add wasm32-unknown-unknown
+git clone https://github.com/rsantacroce/ourcraft
+cd ourcraft/mods</code></pre></li>
+      <li>A text editor. <a href="https://code.visualstudio.com">VS Code</a> with the
+        <em>rust-analyzer</em> extension is a good choice: it shows mistakes as you type and
+        completes names like <code>guest::</code> for you.</li>
+    </ol>
+    <p>Everything mod-related lives in the <code>mods/</code> folder:</p>
+    <table>
+      <tbody>
+        <tr><td><code>mods/paint_blocks/</code></td><td>A small example: paint blocks and <code>/rainbow</code>.</td></tr>
+        <tr><td><code>mods/snow_fun/</code></td><td>The tutorial mod from this guide, finished.</td></tr>
+        <tr><td><code>mods/team_shooter/</code></td><td>Splat Squad: a big example of a game mode.</td></tr>
+        <tr><td><code>mods/build.sh</code></td><td>Builds every mod into <code>mods/dist/</code>.</td></tr>
+        <tr><td><code>crates/mod_api/</code></td><td>The mod API: every event and function.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ============================================================ -->
+    <h2 id="first">3. Your first mod</h2>
+    <p>A mod that says hello to everyone who joins. In the <code>mods</code> folder:</p>
+    <ol class="steps">
+      <li>Make a folder <code>hello_mod</code> with a <code>src</code> folder inside it.</li>
+      <li>Create <code>hello_mod/Cargo.toml</code>:
+        <pre><code>[package]
+name = &quot;hello_mod&quot;
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = [&quot;cdylib&quot;]
+
+[dependencies]
+ourcraft_mod_api = { path = &quot;../../crates/mod_api&quot; }</code></pre>
+        The <code>name</code> becomes the mod's name and the <code>.wasm</code> file name. Use
+        lowercase letters and underscores.</li>
+      <li>Add it to the <code>members</code> list in <code>mods/Cargo.toml</code>:
+        <pre><code>[workspace]
+resolver = &quot;3&quot;
+members = [&quot;paint_blocks&quot;, &quot;snow_fun&quot;, &quot;team_shooter&quot;, &quot;hello_mod&quot;]</code></pre></li>
+      <li>Create <code>hello_mod/src/lib.rs</code>:
+        <pre><code>use ourcraft_mod_api::guest::{self, Mod};
+use ourcraft_mod_api::{Event, EventReply};
+
+#[derive(Default)]
+struct Hello;
+
+impl Mod for Hello {
+    fn on_event(&amp;mut self, event: Event) -&gt; EventReply {
+        if let Event::PlayerJoined { name, .. } = event {
+            guest::chat(None, &amp;format!(&quot;Hello, {name}! Welcome to my world.&quot;));
+        }
+        EventReply::Ok
+    }
+}
+
+ourcraft_mod_api::export_mod!(Hello);</code></pre></li>
+      <li>Build it:
+        <pre><code>./build.sh
+# built dist/hello_mod.wasm (... bytes)</code></pre></li>
+      <li>Start the game again from the top folder. It bundles everything in
+        <code>mods/dist/</code>, so the new mod is included:
+        <pre><code>cd ..
+cargo run --release</code></pre>
+        Open a world and you'll be greeted. In the terminal you'll see:
+        <pre><code>INFO Loaded mod &#x27;hello_mod&#x27;</code></pre></li>
+    </ol>
+    <div class="tip"><strong>Quicker way while you're working on a mod:</strong> instead of
+      rebuilding the game, copy the <code>.wasm</code> file into the <code>mods</code> folder of
+      your game data (see <a href="#sharing">Sharing your mod</a>) and just reopen the world.</div>
+
+    <!-- ============================================================ -->
+    <h2 id="how">4. How mods work</h2>
+    <p>A mod is a conversation with the game:</p>
+    <ol>
+      <li>The game tells the mod that something happened: an <strong>event</strong> (a player
+        joined, someone typed in chat, a tick of the clock...).</li>
+      <li>While handling it, the mod can ask the game to do things by calling
+        <strong><code>guest::</code> functions</strong> (place a block, send a chat message...),
+        or ask questions (what block is here? where are the players?).</li>
+      <li>The mod answers the event with a <strong>reply</strong>: usually
+        <code>EventReply::Ok</code>; <code>Deny</code> to stop a player changing a block;
+        <code>Handled</code> to say a chat message was your command.</li>
+    </ol>
+    <p>Your mod is a Rust type that implements <code>Mod</code>, with one function,
+      <code>on_event</code>. Its fields are the mod's memory: they keep their values from one
+      event to the next. It must implement <code>Default</code>, which is how the mod starts.
+      <code>export_mod!</code> at the bottom connects it to the game.</p>
+    <p>Events come one at a time, so you never have to worry about two things happening at
+      once.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="tutorial">5. Tutorial: Snow Fun</h2>
+    <p>Now a bigger mod, in four steps: a greeting, two new blocks, a <code>/snowman</code>
+      command, and a snowball thrower whose snowballs leave snow bricks where they land. The
+      finished mod is in the repository at
+      <a href="https://github.com/rsantacroce/ourcraft/blob/main/mods/snow_fun/src/lib.rs">mods/snow_fun/src/lib.rs</a>,
+      and comes with the game, so you can try it first: type <code>/snowman</code> or
+      <code>/snowballs</code> in a building world.</p>
+    <p>Set it up like <code>hello_mod</code> above, with the name <code>snow_fun</code>. First,
+      what the mod needs to remember:</p>
+    <pre><code>use std::collections::BTreeSet;
+use ourcraft_mod_api::{EntityId, PlayerId};
+
+/// Everything the mod remembers between events.
+#[derive(Default)]
+struct SnowFun {
+    /// Off in game-mode worlds, so we don&#x27;t interfere with the game.
+    active: bool,
+    /// Players holding the snowball thrower.
+    throwers: BTreeSet&lt;PlayerId&gt;,
+    /// Snowballs in the air.
+    snowballs: BTreeSet&lt;EntityId&gt;,
+}</code></pre>
+    <p>A <code>BTreeSet</code> is a set of values, sorted. We'll fill these in steps 4.</p>
+
+    <h3 id="step1">Step 1: Say hello, but only in building worlds</h3>
+    <p>Every mod is loaded in every world. Snow Fun shouldn't hand out snowballs in the middle of
+      a Splat Squad match, so it checks the world's game mode when it starts, and ignores
+      everything in game-mode worlds:</p>
+    <pre><code>impl Mod for SnowFun {
+    fn on_event(&amp;mut self, event: Event) -&gt; EventReply {
+        match event {
+            Event::Init { game_mode, .. } =&gt; {
+                register_content();                // step 2
+                self.active = game_mode.is_none(); // a plain building world?
+                guest::log(&quot;Snow Fun loaded&quot;);
+                EventReply::Ok
+            }
+            // In a game-mode world (like Splat Squad), ignore everything else.
+            _ if !self.active =&gt; EventReply::Ok,
+
+            Event::PlayerJoined { player, name } =&gt; {
+                guest::chat(
+                    Some(player),
+                    &amp;format!(&quot;Brrr, hi {name}! Try /snowman and /snowballs&quot;),
+                );
+                EventReply::Ok
+            }
+            Event::PlayerLeft { player } =&gt; {
+                self.throwers.remove(&amp;player);
+                EventReply::Ok
+            }
+            // ... steps 3 and 4 go here ...
+            _ =&gt; EventReply::Ok,
+        }
+    }
+}</code></pre>
+    <p>The line <code>_ if !self.active =&gt; EventReply::Ok</code> catches every event when the
+      mod is off. Events after it only run in building worlds. <code>chat(Some(player), ...)</code>
+      sends a message only to that player; <code>None</code> would send it to everyone.</p>
+
+    <h3 id="step2">Step 2: New blocks</h3>
+    <p>Blocks, textures, models and tools can only be added during <code>Init</code>. We do it in
+      every world, even when the mod is off, so that worlds stay compatible.</p>
+    <pre><code>const SNOW_WHITE: [u8; 4] = [240, 248, 255, 255];
+
+fn register_content() {
+    // Snow Bricks, drawn by hand: each letter is a colour from the palette.
+    let rows = [
+        &quot;AAAAAAAAAAAAAAAA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;AAAAAAAAAAAAAAAA&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+        &quot;AAAAAAAAAAAAAAAA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;BBBBBBBBBBBBBBBA&quot;,
+        &quot;AAAAAAAAAAAAAAAA&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+        &quot;BBBBBBBABBBBBBBB&quot;,
+    ];
+    let palette = [(&#x27;A&#x27;, [190, 210, 230, 255]), (&#x27;B&#x27;, SNOW_WHITE)];
+    guest::register_texture(&quot;snow_bricks&quot;, pixel_art(&amp;rows, &amp;palette));
+    guest::register_block(BlockSpec::simple(
+        &quot;snow_fun:snow_bricks&quot;,
+        &quot;Snow Bricks&quot;,
+        &quot;snow_bricks&quot;,
+    ));
+
+    // An icy blue lantern that glows in the dark.
+    guest::register_texture(&quot;ice_lantern&quot;, speckled([150, 210, 255, 255], 7));
+    guest::register_block(BlockSpec {
+        light: 12,
+        ..BlockSpec::simple(&quot;snow_fun:ice_lantern&quot;, &quot;Ice Lantern&quot;, &quot;ice_lantern&quot;)
+    });
+}</code></pre>
+    <p>The texture is drawn as text: 16 rows of 16 characters. Each character is looked up in
+      the palette, a list of <code>(character, [red, green, blue, alpha])</code>. Characters not
+      in the palette are see-through. Colours go from 0 to 255; alpha 255 is solid.</p>
+    <p>Names have two parts, <code>yourmod:thing</code>, so two mods never pick the same name.
+      <code>BlockSpec::simple</code> makes a normal solid block. To change something, use the
+      <code>..</code> trick above, or write every field out:</p>
+    <pre><code>guest::register_block(BlockSpec {
+    name: &quot;mymod:window&quot;.into(),
+    display_name: &quot;Fancy Window&quot;.into(),
+    render: Render::Cutout,      // has fully see-through pixels
+    solid: true,                 // you can&#x27;t walk through it
+    breakable: true,
+    light: 0,                    // 0-15; above 0 glows
+    texture_top: &quot;window_frame&quot;.into(),
+    texture_bottom: &quot;window_frame&quot;.into(),
+    texture_side: &quot;window&quot;.into(),
+});</code></pre>
+    <p>Use <code>Render::Cutout</code> for blocks with holes (alpha 0 pixels), like leaves, and
+      <code>Render::Translucent</code> for partly see-through blocks, like water. New blocks
+      appear in the inventory (<kbd>E</kbd>) automatically.</p>
+
+    <h3 id="step3">Step 3: A chat command</h3>
+    <p>Chat messages arrive as <code>Event::Chat</code>. Add this to <code>on_event</code>:</p>
+    <pre><code>            Event::Chat { player, text } =&gt; match text.trim() {
+                &quot;/snowman&quot; =&gt; {
+                    build_snowman(player);
+                    EventReply::Handled // hide the command from chat
+                }
+                &quot;/snowballs&quot; =&gt; {
+                    self.toggle_thrower(player);
+                    EventReply::Handled
+                }
+                _ =&gt; EventReply::Ok,    // normal chat: let it through
+            },</code></pre>
+    <p>And the function that builds the snowman:</p>
+    <pre><code>/// Build a snowman three blocks in front of the player.
+fn build_snowman(player: PlayerId) {
+    let Some(p) = guest::players().into_iter().find(|p| p.id == player) else {
+        return;
+    };
+    let (Some(brick), Some(lantern)) = (
+        guest::block_id(&quot;snow_fun:snow_bricks&quot;),
+        guest::block_id(&quot;snow_fun:ice_lantern&quot;),
+    ) else {
+        return;
+    };
+    let x = (p.position[0] + p.look[0] * 3.0).floor() as i32;
+    let z = (p.position[2] + p.look[2] * 3.0).floor() as i32;
+    let Some(ground) = guest::ground_height(x, z) else {
+        return;
+    };
+    // Two snowy blocks for the body and a glowing head.
+    let body: [(i32, u16); 3] = [(1, brick), (2, brick), (3, lantern)];
+    let mut placed = 0;
+    for (dy, block) in body {
+        let pos: BlockPos = [x, ground + dy, z];
+        // Only build in empty air. `try_set_block` says whether it worked
+        // (it doesn&#x27;t if that part of the world hasn&#x27;t loaded yet).
+        if guest::get_block(pos) == 0 &amp;&amp; guest::try_set_block(pos, block) {
+            placed += 1;
+        }
+    }
+    if placed == 0 {
+        guest::chat(Some(player), &quot;No room for a snowman here. Try somewhere else!&quot;);
+        return;
+    }
+    guest::effect(EffectKind::Confetti, center([x, ground + 3, z]), SNOW_WHITE);
+    guest::chat(Some(player), &quot;Ta-da! A snowman.&quot;);
+}</code></pre>
+    <p>Things to notice:</p>
+    <ul>
+      <li><code>players()</code> tells you where everyone is and which way they're looking.
+        <code>look</code> is a direction, so <code>position + look * 3</code> is three blocks in
+        front.</li>
+      <li>Block ids are numbers, and they can be different in each world. Always look them up by
+        name with <code>block_id</code>, rather than writing numbers in your code.</li>
+      <li>Block 0 is always air. Checking for it means the mod never builds over someone's
+        work.</li>
+      <li>A chat command with lots of building can't take forever: each event has a time limit
+        (see <a href="#rules">Rules</a>). A few thousand blocks at once is fine.</li>
+    </ul>
+
+    <h3 id="step4">Step 4: A snowball thrower</h3>
+    <p>A tool is something in the hotbar that sends your mod <code>Event::UseTool</code> when a
+      player clicks. A projectile is an entity that flies by itself, falls with gravity, and sends
+      <code>Event::ProjectileHit</code> when it hits something. Register a model for the snowball
+      and the tool, in <code>register_content</code>:</p>
+    <pre><code>    // (inside register_content)
+    // What a snowball looks like in the air: one small white box.
+    guest::register_model(ModelSpec {
+        name: &quot;snow_fun:snowball&quot;.into(),
+        boxes: vec![ModelBox {
+            min: [-0.15; 3],
+            max: [0.15; 3],
+            color: SNOW_WHITE,
+        }],
+        spin: true,
+    });
+
+    // The thrower, with a 16x16 icon drawn the same way as a texture.
+    guest::register_tool(ToolSpec {
+        name: &quot;snow_fun:thrower&quot;.into(),
+        display_name: &quot;Snowball Thrower&quot;.into(),
+        icon: pixel_art(&amp;icon, &amp;icon_palette),
+        cooldown: 0.3, // seconds between throws while the button is held
+    });</code></pre>
+    <p><code>/snowballs</code> swaps the player's hotbar for the thrower, and back:</p>
+    <pre><code>impl SnowFun {
+    fn toggle_thrower(&amp;mut self, player: PlayerId) {
+        if self.throwers.remove(&amp;player) {
+            // An empty list gives the normal block hotbar back.
+            guest::set_tools(player, Vec::new());
+            guest::chat(Some(player), &quot;Snowball thrower put away&quot;);
+        } else {
+            self.throwers.insert(player);
+            guest::set_tools(player, vec![&quot;snow_fun:thrower&quot;.into()]);
+            guest::show_title(Some(player), &quot;Snowball time!&quot;, 2.0);
+        }
+    }
+}</code></pre>
+    <p>Throwing, and what happens when a snowball lands:</p>
+    <pre><code>            Event::UseTool { player, tool, origin, direction, .. }
+                if tool == &quot;snow_fun:thrower&quot; =&gt;
+            {
+                let start = add(origin, scale(direction, 0.6)); // just past the face
+                if let Some(id) = guest::spawn_entity(EntitySpec {
+                    model: &quot;snow_fun:snowball&quot;.into(),
+                    position: start,
+                    velocity: scale(direction, 22.0), // blocks per second
+                    motion: EntityMotion::Projectile {
+                        gravity: 12.0,
+                        radius: 0.2,
+                        hits_players: true,
+                    },
+                    lifetime: 4.0,
+                    owner: Some(player),
+                }) {
+                    self.snowballs.insert(id); // remember it&#x27;s ours
+                }
+                EventReply::Ok
+            }
+
+            // Every mod hears about every projectile, so only handle our own.
+            Event::ProjectileHit { entity, hit, .. } if self.snowballs.remove(&amp;entity) =&gt; {
+                match hit {
+                    Hit::Block { pos, normal } =&gt; {
+                        // Put a snow brick on the face it hit, if that&#x27;s air.
+                        let target = [pos[0] + normal[0], pos[1] + normal[1], pos[2] + normal[2]];
+                        if guest::get_block(target) == 0
+                            &amp;&amp; let Some(brick) = guest::block_id(&quot;snow_fun:snow_bricks&quot;)
+                        {
+                            guest::set_block(target, brick);
+                        }
+                        guest::effect(EffectKind::Splat, center(target), SNOW_WHITE);
+                    }
+                    Hit::Player { at, .. } =&gt; {
+                        guest::effect(EffectKind::Poof, at, SNOW_WHITE);
+                        guest::sound(&quot;pop&quot;, Some(at));
+                    }
+                }
+                EventReply::Ok
+            }</code></pre>
+    <ul>
+      <li><code>origin</code> is the player's eyes and <code>direction</code> is where they're
+        aiming. The game moves the snowball for you, smoothly, on every player's screen.</li>
+      <li><code>normal</code> points out of the face that was hit, so <code>pos + normal</code>
+        is the empty space in front of it.</li>
+      <li>The mod remembers the ids of its own snowballs. That matters: if two mods both
+        throw things, each must only react to its own.</li>
+    </ul>
+    <p>Build with <code>./build.sh</code>, start a world, type <code>/snowballs</code>, and have a
+      snowball fight. 🎉</p>
+
+    <!-- ============================================================ -->
+    <h2 id="recipes">6. More recipes</h2>
+    <h3>Do something regularly</h3>
+    <p><code>Tick</code> arrives 20 times a second; <code>tick</code> counts up from the start.</p>
+    <pre><code>Event::Tick { tick, .. } =&gt; {
+    // 20 ticks = 1 second. Do something every 10 seconds:
+    if tick % 200 == 0 {
+        guest::chat(None, &quot;Ten more seconds of fun!&quot;);
+    }
+    EventReply::Ok
+}</code></pre>
+    <h3>Protect an area</h3>
+    <p>Reply <code>Deny</code> to a <code>BlockChange</code> and the block goes back as it was.</p>
+    <pre><code>// No building or breaking within 20 blocks of the spawn point.
+Event::BlockChange { player, pos, .. } =&gt; {
+    if let Some(s) = guest::world_spawn() {
+        let (dx, dz) = (pos[0] - s[0], pos[2] - s[2]);
+        if dx * dx + dz * dz &lt; 20 * 20 {
+            guest::chat(Some(player), &quot;This area is protected!&quot;);
+            return EventReply::Deny;
+        }
+    }
+    EventReply::Ok
+}</code></pre>
+    <h3>Talk to players: HUD, titles, health and rules</h3>
+    <pre><code>use ourcraft_mod_api::{HudLine, PlayerRules};
+
+// The panel in the top right corner.
+guest::set_hud(Some(player), vec![
+    guest::hud_line(&quot;Treasure hunt&quot;),
+    HudLine { text: format!(&quot;Gems found: {gems}&quot;), color: [120, 220, 255, 255] },
+]);
+
+// A big message in the middle of the screen, for 3 seconds.
+guest::show_title(None, &quot;Go!&quot;, 3.0);
+
+// A health bar (pass max = 0.0 to hide it).
+guest::set_health(player, 75.0, 100.0);
+
+// Rules for one player: speed, flying, building, shirt colour, name tag.
+guest::set_rules(player, PlayerRules {
+    speed: 1.3,
+    can_fly: false,
+    can_build: true,
+    color: Some([255, 200, 0, 255]),
+    tag: Some(&quot;[Gold]&quot;.into()),
+});</code></pre>
+    <h3>The world, time, rays, teleports and sounds</h3>
+    <pre><code>guest::set_time_of_day(0.5);                 // 0 = midnight, 0.5 = noon
+let noon = guest::time_of_day() &gt; 0.25 &amp;&amp; guest::time_of_day() &lt; 0.75;
+
+let stone = guest::block_id(&quot;core:stone&quot;).unwrap();
+let y = guest::ground_height(10, -4).unwrap_or(64);
+guest::set_block([10, y + 1, -4], stone);
+
+// What is the player looking at (up to 8 blocks away)?
+if let Some(Hit::Block { pos, .. }) = guest::raycast(origin, direction, 8.0, false, Some(player)) {
+    guest::chat(Some(player), &amp;format!(&quot;That&#x27;s block {:?}&quot;, pos));
+}
+
+guest::teleport(player, [0.5, 80.0, 0.5]);
+guest::sound(&quot;cheer&quot;, None);                 // for everyone</code></pre>
+    <h3>Random numbers</h3>
+    <p>Mods can't ask the computer for random numbers, so make your own. This little generator
+      is plenty for games:</p>
+    <pre><code>/// A tiny random number generator (xorshift). Keep one in your mod state.
+#[derive(Default)]
+struct Rng(u32);
+
+impl Rng {
+    fn next(&amp;mut self) -&gt; u32 {
+        if self.0 == 0 { self.0 = 0x9E37_79B9; }
+        self.0 ^= self.0 &lt;&lt; 13;
+        self.0 ^= self.0 &gt;&gt; 17;
+        self.0 ^= self.0 &lt;&lt; 5;
+        self.0
+    }
+    /// A number from 0 to n-1.
+    fn below(&amp;mut self, n: u32) -&gt; u32 { self.next() % n }
+}
+
+// Mix in the tick count so each game is different:
+// Event::Tick { tick, .. } =&gt; self.rng.0 ^= tick as u32,</code></pre>
+
+    <!-- ============================================================ -->
+    <h2 id="game-modes">7. Making a game mode</h2>
+    <p>A game mode is a mod that turns itself on only in worlds made for it. Each world can have
+      one game mode, chosen when it's created and saved with the world. The mod sees it in
+      <code>Init</code>:</p>
+    <pre><code>const MODE: &amp;str = &quot;treasure_hunt&quot;;
+
+Event::Init { game_mode, .. } =&gt; {
+    register_content(); // always, so block ids are the same in every world
+    self.active = game_mode.as_deref() == Some(MODE);
+    EventReply::Ok
+}
+_ if !self.active =&gt; EventReply::Ok,
+Event::Start =&gt; {
+    // The world is ready: build the arena, hide the treasure...
+    EventReply::Ok
+}</code></pre>
+    <p>Start a world with your mode from the command line:</p>
+    <pre><code>cargo run --release -- --world &quot;Treasure Island&quot; --mode treasure_hunt
+
+# or a dedicated server
+cargo run --release -p ourcraft_server --bin ourcraft-server -- \
+    --world hunt --mode treasure_hunt</code></pre>
+    <p>Ideas for a game mode, and how you'd make them:</p>
+    <ul>
+      <li><strong>Treasure hunt:</strong> hide glowing gem blocks around the spawn on
+        <code>Start</code>; watch <code>BlockChange</code> for someone breaking one; keep score on
+        the HUD.</li>
+      <li><strong>Race:</strong> a start line and checkpoints of coloured blocks; on each
+        <code>Tick</code>, check <code>players()</code> positions; <code>show_title</code> for the
+        winner.</li>
+      <li><strong>Build contest:</strong> a timer on the HUD; when time's up,
+        <code>set_rules</code> with <code>can_build: false</code> and let everyone vote in chat.</li>
+    </ul>
+    <p>For a full example, with teams, classes, flags, health, respawning and a scoreboard,
+      read <a href="https://github.com/rsantacroce/ourcraft/blob/main/mods/team_shooter/src/lib.rs">Splat Squad's source</a>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="reference">8. API reference</h2>
+    <p>Everything here comes from <code>ourcraft_mod_api</code>
+      (<a href="https://github.com/rsantacroce/ourcraft/blob/main/crates/mod_api/src/lib.rs">lib.rs</a>
+      and <a href="https://github.com/rsantacroce/ourcraft/blob/main/crates/mod_api/src/guest.rs">guest.rs</a>),
+      which has more comments. Run <code>cargo doc -p ourcraft_mod_api --open</code> in the game
+      folder to browse it.</p>
+    <h3 id="ref-events">Events</h3>
+    <table>
+<thead><tr><th>Event</th><th>When</th><th>What it's for</th></tr></thead>
+<tbody>
+<tr><td><code>Init { api_version, game_mode }</code></td><td>Once, when the world opens</td><td>Register blocks, textures, models and tools. The <strong>only</strong> time you can.</td></tr>
+<tr><td><code>Start</code></td><td>Once, when the world is ready</td><td>Build arenas, set things up. <code>world_spawn()</code> works here.</td></tr>
+<tr><td><code>Tick { tick, dt }</code></td><td>20 times a second</td><td>Timers, game rules, moving things.</td></tr>
+<tr><td><code>PlayerJoined { player, name }</code></td><td>Someone joins</td><td>Greet them, give tools, pick a team.</td></tr>
+<tr><td><code>PlayerLeft { player }</code></td><td>Someone leaves</td><td>Forget about them.</td></tr>
+<tr><td><code>BlockChange { player, pos, old, new }</code></td><td>A player tries to break or place</td><td>Reply <code>Deny</code> to stop it (the block goes back).</td></tr>
+<tr><td><code>Chat { player, text }</code></td><td>A chat message</td><td>Reply <code>Handled</code> if it was your command.</td></tr>
+<tr><td><code>UseTool { player, tool, origin, direction, secondary }</code></td><td>A player clicks with your tool</td><td>Fire, swing, build... <code>secondary</code> is the right button / tap.</td></tr>
+<tr><td><code>ProjectileHit { entity, owner, hit }</code></td><td>A projectile hit a block or player</td><td>Splash, score, place blocks. Check it's yours!</td></tr>
+</tbody></table>
+    <p>Every mod receives every event. Mods take turns in alphabetical order. For <code>Chat</code> and
+      <code>BlockChange</code>, the first mod to reply <code>Handled</code> or <code>Deny</code>
+      decides, and the mods after it don't see the event.</p>
+    <h3 id="ref-functions">Functions</h3>
+    <p>All in <code>ourcraft_mod_api::guest</code>. <code>to</code> means <code>Some(player)</code>
+      for one player or <code>None</code> for everyone.</p>
+    <table>
+<thead><tr><th>guest:: function</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>log(text)</code></td><td>Write a line in the game's log, as <code>[your_mod] text</code>.</td></tr>
+<tr><td><code>register_block(BlockSpec)</code></td><td>A new block. <em>Init only.</em></td></tr>
+<tr><td><code>register_texture(name, rgba)</code></td><td>A 16×16 texture (1024 bytes). <em>Init only.</em></td></tr>
+<tr><td><code>register_model(ModelSpec)</code></td><td>A shape made of coloured boxes, for entities. <em>Init only.</em></td></tr>
+<tr><td><code>register_tool(ToolSpec)</code></td><td>An item for the hotbar. <em>Init only.</em></td></tr>
+<tr><td><code>block_id(name) → Option&lt;BlockId&gt;</code></td><td>Look up a block by name, e.g. <code>"core:stone"</code>.</td></tr>
+<tr><td><code>get_block(pos) → BlockId</code></td><td>What's at a position (0 = air, or not loaded).</td></tr>
+<tr><td><code>set_block(pos, id)</code></td><td>Change a block. Everyone nearby sees it.</td></tr>
+<tr><td><code>try_set_block(pos, id) → bool</code></td><td>Same, but tells you if it worked.</td></tr>
+<tr><td><code>ground_height(x, z) → Option&lt;i32&gt;</code></td><td>The y of the highest solid block.</td></tr>
+<tr><td><code>raycast(origin, dir, max, hit_players, ignore) → Option&lt;Hit&gt;</code></td><td>What a straight line hits first.</td></tr>
+<tr><td><code>world_spawn() → Option&lt;BlockPos&gt;</code></td><td>Where new players appear. Always the same for a world.</td></tr>
+<tr><td><code>time_of_day() → f32</code>, <code>set_time_of_day(t)</code></td><td>0 = midnight, 0.25 = sunrise, 0.5 = noon.</td></tr>
+<tr><td><code>players() → Vec&lt;PlayerInfo&gt;</code></td><td>Everyone online: id, name, position, velocity, look, on_ground.</td></tr>
+<tr><td><code>chat(to, text)</code></td><td>A chat message to one player (<code>Some(id)</code>) or everyone (<code>None</code>).</td></tr>
+<tr><td><code>teleport(player, position)</code></td><td>Move a player (feet position).</td></tr>
+<tr><td><code>set_rules(player, PlayerRules)</code></td><td>Speed, flying, building, shirt colour, name tag.</td></tr>
+<tr><td><code>set_health(player, health, max)</code></td><td>Show a health bar (max 0 hides it). The number is yours to manage.</td></tr>
+<tr><td><code>set_hud(to, Vec&lt;HudLine&gt;)</code></td><td>Replace the text panel in the top right.</td></tr>
+<tr><td><code>show_title(to, text, seconds)</code></td><td>A big message in the middle of the screen.</td></tr>
+<tr><td><code>set_tools(player, Vec&lt;String&gt;)</code></td><td>Fill the hotbar with your tools; an empty list gives blocks back.</td></tr>
+<tr><td><code>spawn_entity(EntitySpec) → Option&lt;EntityId&gt;</code></td><td>Something that floats or flies, drawn with a model.</td></tr>
+<tr><td><code>move_entity(id, position)</code>, <code>despawn_entity(id)</code></td><td>Move or remove an entity.</td></tr>
+<tr><td><code>effect(kind, position, color)</code></td><td>Particles: <code>Splat</code>, <code>Confetti</code> or <code>Poof</code>.</td></tr>
+<tr><td><code>sound(name, at)</code></td><td>A built-in sound at a place, or for everyone with <code>None</code>.</td></tr>
+<tr><td><code>hud_line(text) → HudLine</code></td><td>A white HUD line (helper).</td></tr>
+</tbody></table>
+    <h3 id="ref-types">Types</h3>
+    <table>
+<thead><tr><th>Type</th><th>Fields</th></tr></thead>
+<tbody>
+<tr><td><code>BlockSpec</code></td><td><code>name</code>, <code>display_name</code>, <code>render</code> (<code>Opaque</code> / <code>Cutout</code> / <code>Translucent</code>), <code>solid</code>, <code>breakable</code>, <code>light</code> (0–15), <code>texture_top</code>/<code>_bottom</code>/<code>_side</code>. <code>BlockSpec::simple(name, display, texture)</code> fills in the rest.</td></tr>
+<tr><td><code>ToolSpec</code></td><td><code>name</code>, <code>display_name</code>, <code>icon</code> (16×16 RGBA), <code>cooldown</code> (seconds).</td></tr>
+<tr><td><code>ModelSpec</code></td><td><code>name</code>, <code>boxes</code> (each <code>ModelBox { min, max, color }</code>, in blocks around the origin), <code>spin</code>.</td></tr>
+<tr><td><code>EntitySpec</code></td><td><code>model</code>, <code>position</code>, <code>velocity</code>, <code>motion</code> (<code>Fixed</code> or <code>Projectile { gravity, radius, hits_players }</code>), <code>lifetime</code> (0 = forever), <code>owner</code>.</td></tr>
+<tr><td><code>PlayerRules</code></td><td><code>speed</code> (1.0 normal), <code>can_fly</code>, <code>can_build</code>, <code>color</code>, <code>tag</code>. <code>PlayerRules::default()</code> is a normal player.</td></tr>
+<tr><td><code>PlayerInfo</code></td><td><code>id</code>, <code>name</code>, <code>position</code> (feet), <code>velocity</code>, <code>look</code> (direction), <code>on_ground</code>.</td></tr>
+<tr><td><code>Hit</code></td><td><code>Block { pos, normal }</code> (normal points out of the face that was hit) or <code>Player { id, at }</code>.</td></tr>
+<tr><td><code>HudLine</code></td><td><code>text</code>, <code>color</code>.</td></tr>
+<tr><td>Small types</td><td><code>BlockPos = [i32; 3]</code>, <code>Vec3 = [f32; 3]</code>, <code>Rgba = [u8; 4]</code>, <code>BlockId = u16</code>, <code>PlayerId</code> and <code>EntityId = u64</code>.</td></tr>
+<tr><td>Helpers</td><td><code>pixel_art(&amp;rows, &amp;palette)</code> draws a texture from 16 strings; <code>speckled(color, seed)</code> makes a one-colour texture with a light speckle.</td></tr>
+</tbody></table>
+    <h3 id="ref-names">Built-in blocks and sounds</h3>
+    <p><strong>Blocks:</strong> <code>core:air</code>, <code>core:stone</code>, <code>core:dirt</code>, <code>core:grass</code>, <code>core:sand</code>, <code>core:log</code>, <code>core:leaves</code>, <code>core:planks</code>, <code>core:snow</code>, <code>core:cactus</code>, <code>core:bedrock</code>, <code>core:gravel</code>, <code>core:cobblestone</code>, <code>core:glass</code>, <code>core:bricks</code>, <code>core:lamp</code>, <code>core:water</code> (<code>core:snow</code> is snowy grass). Paint
+      Blocks adds <code>paint:red</code>, <code>paint:orange</code>, <code>paint:yellow</code>,
+      <code>paint:lime</code>, <code>paint:blue</code>, <code>paint:purple</code>,
+      <code>paint:pink</code>, <code>paint:white</code> and <code>paint:rainbow_lamp</code>.</p>
+    <p><strong>Sounds:</strong> <code>place</code>, <code>break</code>, <code>pop</code>, <code>splat</code>, <code>grab</code>, <code>cheer</code>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="rules">9. Rules and limits</h2>
+    <ul>
+      <li><strong>Content only in <code>Init</code>.</strong> Registering later fails with
+        "content can only be registered during Init".</li>
+      <li><strong>Time:</strong> each event may run about 50 million WebAssembly instructions.
+        That's a lot, but an endless loop will hit it. The event is stopped, and after
+        <strong>3</strong> failures (time-outs or crashes) the mod is switched off until the world
+        is reopened.</li>
+      <li><strong>Memory:</strong> up to 64 MiB per mod.</li>
+      <li><strong>Crashes count as failures.</strong> A Rust <code>panic!</code>, an
+        <code>unwrap()</code> on <code>None</code>, or dividing by zero stops the event. Prefer
+        <code>if let</code> and <code>let ... else</code>, like the examples.</li>
+      <li><strong>No outside world:</strong> no files, internet, clock or system random numbers.
+        A mod that tries to use them won't load.</li>
+      <li><strong>Names:</strong> give everything your mod's prefix (<code>yourmod:thing</code>).
+        Worlds save blocks by name, so you can add and remove mods safely; blocks from a removed
+        mod turn into air.</li>
+      <li><strong>API version:</strong> mods are built for an API version (now 1). If the game's
+        version changes, rebuild your mod.</li>
+      <li><strong>Be kind:</strong> Ourcraft is made for kids. Keep mods friendly: cartoon
+        splats and confetti, not blood.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="testing">10. Testing and debugging</h2>
+    <ul>
+      <li><strong>Log messages:</strong> <code>guest::log("got here")</code> prints
+        <code>[your_mod] got here</code> in the terminal running the game (or the server).</li>
+      <li><strong>Chat:</strong> <code>guest::chat(None, &amp;format!("{:?}", something))</code>
+        shows a value right in the game.</li>
+      <li><strong>Watch the terminal</strong> when a world opens: you'll see
+        <code>Loaded mod 'your_mod'</code>, or why it wasn't loaded.</li>
+      <li><strong>Unit tests:</strong> logic that doesn't call the game can be tested with plain
+        <code>cargo test</code> (outside the game, <code>guest::</code> calls just return
+        nothing):
+        <pre><code>// Logic that doesn&#x27;t call the game can be tested normally:
+//   cd mods &amp;&amp; cargo test -p my_mod
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rng_stays_in_range() {
+        let mut rng = Rng::default();
+        assert!((0..1000).all(|_| rng.below(6) &lt; 6));
+    }
+}</code></pre></li>
+      <li><strong>End-to-end tests:</strong>
+        <a href="https://github.com/rsantacroce/ourcraft/blob/main/crates/server/tests/snow_fun.rs">crates/server/tests/snow_fun.rs</a>
+        starts a real server with the mods and a pretend player, types <code>/snowman</code>, throws a
+        snowball and checks what happens. Copy it to test your own mod.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="sharing">11. Sharing your mod</h2>
+    <p>A mod is a single file: <code>mods/dist/your_mod.wasm</code>. Send it to a friend, and
+      they put it in the <code>mods</code> folder next to their <code>worlds</code> folder
+      (create it if it isn't there):</p>
+    <table>
+      <thead><tr><th>Computer</th><th>Mods folder</th></tr></thead>
+      <tbody>
+        <tr><td>macOS</td><td><code>~/Library/Application Support/Ourcraft/mods</code></td></tr>
+        <tr><td>Windows</td><td><code>%APPDATA%\Ourcraft\mods</code></td></tr>
+        <tr><td>Linux</td><td><code>~/.local/share/ourcraft/mods</code></td></tr>
+        <tr><td>Dedicated server</td><td><code>mods</code> next to where it runs, or
+          <code>--mods FOLDER</code></td></tr>
+      </tbody>
+    </table>
+    <p>Mods are loaded when a world opens. A file in the mods folder replaces a bundled mod with
+      the same name, which is handy for trying changes to Paint Blocks or Splat Squad.</p>
+    <p><strong>iPad and Android</strong> can't easily add files, so they use the mods bundled into
+      the game: put your <code>.wasm</code> in <code>mods/dist/</code> and rebuild the app. When an
+      iPad joins a computer's world, though, it gets that world's mods automatically.</p>
+    <p>Only the person hosting the world (or the server) needs the mod. Friends who join get
+      everything they need to see your blocks and tools.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="trouble">12. Troubleshooting</h2>
+    <h3>"Mod 'x' wasn't loaded: it was made for mod API version..."</h3>
+    <p>The game was updated. Run <code>./build.sh</code> again.</p>
+    <h3>"...it needs `env.something`, which mods aren't allowed to use"</h3>
+    <p>Something in your mod (or a library it uses) wants a file, the clock or random numbers.
+      Remove that code or library. Libraries that use time, files or system random numbers (like
+      <code>rand</code>) won't build or won't load; use the <a href="#recipes">random number recipe</a>.</p>
+    <h3>"Mod 'x' failed" / "switched off after 3 failures"</h3>
+    <p>The mod crashed or ran out of time. Look for <code>unwrap()</code>, indexing past the end
+      of a list, dividing by zero, or a loop that never ends. Add <code>guest::log</code> lines to
+      find where.</p>
+    <h3>My block isn't in the inventory</h3>
+    <p>It has to be registered while handling <code>Event::Init</code>. Check the terminal for
+      "content can only be registered during Init" and that the mod loaded at all.</p>
+    <h3><code>set_block</code> does nothing</h3>
+    <p>That part of the world isn't loaded (it's too far from every player). Use
+      <code>try_set_block</code> to find out, and build near players.</p>
+    <h3>My command shows up in chat</h3>
+    <p>Return <code>EventReply::Handled</code> for it. Also check the spelling: it's compared
+      exactly, so trim spaces with <code>text.trim()</code>.</p>
+    <h3>My mod reacts to other mods' projectiles</h3>
+    <p>Remember the ids that <code>spawn_entity</code> gives you and check
+      <code>ProjectileHit</code>'s <code>entity</code> against them, as in
+      <a href="#step4">step 4</a>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="abi">13. Other languages</h2>
+    <p>Rust is the easiest way, because the API is a Rust crate. But a mod is just a WebAssembly
+      module, so any language that compiles to WebAssembly can make one, with a bit more work.
+      The contract:</p>
+    <pre><code>exports:
+  memory
+  ourcraft_api_version() -&gt; u32            // must return API_VERSION (1)
+  ourcraft_alloc(len: u32) -&gt; u32          // give the host a buffer of len bytes
+  ourcraft_event(ptr: u32, len: u32) -&gt; u64  // handle an Event, return an EventReply
+
+import (the only one allowed):
+  ourcraft.call(ptr: u32, len: u32) -&gt; u64 // send a HostCall, get a HostReply
+
+Messages are postcard-encoded. A u64 result packs a buffer as (ptr &lt;&lt; 32) | len.</code></pre>
+    <p>The message types are the enums <code>Event</code>, <code>EventReply</code>,
+      <code>HostCall</code> and <code>HostReply</code> in
+      <a href="https://github.com/rsantacroce/ourcraft/blob/main/crates/mod_api/src/lib.rs">crates/mod_api/src/lib.rs</a>,
+      encoded with <a href="https://postcard.jamesmunns.com/wire-format">postcard's wire format</a>.
+      New features are only ever added at the end of the enums, so old mods keep working.</p>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Ourcraft is free and open source (MIT). All art, sounds and names are original.</span>
+    <span><a href="./">Home</a> · <a href="manual.html">Manual</a> · <a href="https://github.com/rsantacroce/ourcraft">Source code</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -336,3 +336,10 @@ footer .wrap { display: flex; gap: 1rem; justify-content: space-between; flex-wr
   .nav { margin-left: 0; width: 100%; padding-bottom: 0.5rem; }
   h2 { font-size: 1.1rem; }
 }
+
+/* Long API names in table cells may break anywhere; tables that are still
+   too wide scroll sideways on their own instead of being cut off. */
+td code { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  article table { display: block; overflow-x: auto; }
+}

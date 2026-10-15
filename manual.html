@@ -21,6 +21,7 @@
       <a href="./#screenshots">Screenshots</a>
       <a href="./#splat-squad">Splat Squad</a>
       <a href="manual.html" aria-current="page">Manual</a>
+      <a href="modding.html">Modding</a>
       <a href="https://github.com/rsantacroce/ourcraft">GitHub</a>
     </nav>
   </div>
@@ -395,18 +396,19 @@ cd ourcraft</code></pre></li>
     <!-- ============================================================ -->
     <h2 id="mods">11. Mods</h2>
     <p>Mods are small programs (WebAssembly files ending in <code>.wasm</code>) that add blocks,
-      gadgets and game modes. Ourcraft comes with two: <a href="#paint">Paint Blocks</a> and
-      <a href="#splat-squad">Splat Squad</a>.</p>
+      gadgets and game modes. Ourcraft comes with three: <a href="#paint">Paint Blocks</a>,
+      <a href="#splat-squad">Splat Squad</a>, and Snow Fun (type <code>/snowman</code> or
+      <code>/snowballs</code> in a building world).</p>
     <ul>
       <li><strong>Adding a mod:</strong> put its <code>.wasm</code> file in the <code>mods</code>
         folder next to your worlds folder (or next to a dedicated server), and restart.</li>
       <li><strong>Safety:</strong> mods can't read your files or use the internet. They can only
         use the game's mod API. Each one has limits on time and memory, and a mod that misbehaves
         is switched off.</li>
-      <li><strong>Making mods:</strong> mods are written in Rust. Start with the guide in
-        <a href="https://github.com/rsantacroce/ourcraft/tree/main/mods">mods/README.md</a> and read
-        the Paint Blocks mod; it's short and commented. Textures can be drawn as "pixel art"
-        text, 16 rows of 16 characters.</li>
+      <li><strong>Making mods:</strong> mods are written in Rust. The
+        <a href="modding.html">Modding Guide</a> walks you through making one step by step
+        (snow bricks, a <code>/snowman</code> command and a snowball thrower), with recipes and
+        the full API reference.</li>
     </ul>
 
     <!-- ============================================================ -->
@@ -468,7 +470,7 @@ cd ourcraft</code></pre></li>
 <footer>
   <div class="wrap">
     <span>Ourcraft is free and open source (MIT). All art, sounds and names are original.</span>
-    <span><a href="./">Home</a> · <a href="https://github.com/rsantacroce/ourcraft">Source code</a></span>
+    <span><a href="./">Home</a> · <a href="modding.html">Modding guide</a> · <a href="https://github.com/rsantacroce/ourcraft">Source code</a></span>
   </div>
 </footer>
 
