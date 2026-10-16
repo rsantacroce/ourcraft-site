@@ -85,7 +85,8 @@
         give them a shirt colour and a name tag, show a health bar.</li>
       <li><strong>Screen:</strong> chat messages, big titles, a text panel (HUD), particles and
         sounds.</li>
-      <li><strong>Survival:</strong> crafting recipes for your blocks, and new animals that
+      <li><strong>Survival:</strong> new items (food, fuel, treasure), crafting recipes, and new
+        animals that
         wander, follow food and have babies.</li>
       <li><strong>Game modes:</strong> all of the above together make a game with rules. The
         whole Splat Squad team game is a mod.</li>
@@ -564,6 +565,25 @@ guest::register_recipe(RecipeSpec::Shaped {
     result: &quot;mymod:fish_tank&quot;.into(),
     count: 1,
 });</code></pre>
+    <h3>A new item</h3>
+    <p>Every block is already an item. For things that aren't blocks (a gem, a coin, a snack),
+      register an item with a picture. Snow Fun adds a snow cone you can eat:</p>
+    <pre><code>// In register_content: a picture (16 by 16, drawn like the bricks)...
+guest::register_texture(&quot;snow_cone&quot;, pixel_art(&amp;cone, &amp;cone_colours));
+// ...and the item. ItemSpec::simple stacks to 64 and does nothing else.
+guest::register_item(ItemSpec {
+    food: 3, // fills 3 of the 20 hunger points
+    ..ItemSpec::simple(&quot;snow_fun:snow_cone&quot;, &quot;Snow Cone&quot;, &quot;snow_cone&quot;)
+});
+// A way to make it: a snow brick and an apple give two snow cones.
+guest::register_recipe(RecipeSpec::Shapeless {
+    ingredients: vec![&quot;snow_fun:snow_bricks&quot;.into(), &quot;core:apple&quot;.into()],
+    result: &quot;snow_fun:snow_cone&quot;.into(),
+    count: 2,
+});</code></pre>
+    <p>An <code>ItemSpec</code> can also be a fuel (<code>fuel</code>: seconds of burning) or
+      turn into something in the furnace (<code>smelts_into</code>). Food is eaten by holding
+      "place", like apples.</p>
     <h3>A new animal</h3>
     <p>Animals walk around by themselves, follow players holding their food, have babies, and
       can be petted. You give them a model and a few numbers; the game does the rest.</p>
@@ -689,8 +709,9 @@ cargo run --release -p ourcraft_server --bin ourcraft-server -- \
 <tr><td><code>register_model(ModelSpec)</code></td><td>A shape made of coloured boxes, for entities. <em>Init only.</em></td></tr>
 <tr><td><code>register_tool(ToolSpec)</code></td><td>An item for the hotbar. <em>Init only.</em></td></tr>
 <tr><td><code>register_recipe(RecipeSpec)</code></td><td>A crafting recipe for survival. <em>Init only.</em></td></tr>
+<tr><td><code>register_item(ItemSpec)</code></td><td>An item that isn't a block (register its texture first). <em>Init only.</em></td></tr>
 <tr><td><code>register_mob(MobSpec)</code></td><td>A new kind of animal (register its model first). <em>Init only.</em></td></tr>
-<tr><td><code>spawn_mob(name, position) → Option&lt;EntityId&gt;</code></td><td>Put an animal in the world, e.g. <code>"core:pig"</code>.</td></tr>
+<tr><td><code>spawn_mob(name, position) → Option&lt;EntityId&gt;</code></td><td>Put an animal in the world, e.g. <code>"core:pig"</code>. It's kept: saved with the world, so don't spawn the same ones every time the world opens.</td></tr>
 <tr><td><code>block_id(name) → Option&lt;BlockId&gt;</code></td><td>Look up a block by name, e.g. <code>"core:stone"</code>.</td></tr>
 <tr><td><code>get_block(pos) → BlockId</code></td><td>What's at a position (0 = air, or not loaded).</td></tr>
 <tr><td><code>set_block(pos, id)</code></td><td>Change a block. Everyone nearby sees it.</td></tr>
@@ -721,6 +742,7 @@ cargo run --release -p ourcraft_server --bin ourcraft-server -- \
 <tr><td><code>ToolSpec</code></td><td><code>name</code>, <code>display_name</code>, <code>icon</code> (16×16 RGBA), <code>cooldown</code> (seconds).</td></tr>
 <tr><td><code>ModelSpec</code></td><td><code>name</code>, <code>boxes</code> (each <code>ModelBox { min, max, color }</code>, in blocks around the origin), <code>spin</code>.</td></tr>
 <tr><td><code>EntitySpec</code></td><td><code>model</code>, <code>position</code>, <code>velocity</code>, <code>motion</code> (<code>Fixed</code> or <code>Projectile { gravity, radius, hits_players }</code>), <code>lifetime</code> (0 = forever), <code>owner</code>.</td></tr>
+<tr><td><code>ItemSpec</code></td><td><code>name</code>, <code>display_name</code>, <code>texture</code> (a registered texture), <code>max_stack</code> (1–64), <code>food</code> and <code>heals</code> (out of 20), <code>fuel</code> (seconds), <code>smelts_into</code>. <code>ItemSpec::simple(name, display, texture)</code> fills in the rest.</td></tr>
 <tr><td><code>RecipeSpec</code></td><td><code>Shaped { pattern, key, result, count }</code>: <code>pattern</code> is up to 3 rows of up to 3 characters (<code>' '</code> = empty), <code>key</code> says which item each character is. <code>Shapeless { ingredients, result, count }</code>. Items are named like blocks.</td></tr>
 <tr><td><code>MobSpec</code></td><td><code>name</code>, <code>display_name</code>, <code>model</code>, <code>size</code> (<code>[width, height]</code>), <code>speed</code>, <code>spawns_on</code> (a block name, or <code>None</code>), <code>food</code> (an item name, or <code>None</code>), <code>sound</code>.</td></tr>
 <tr><td><code>PlayerRules</code></td><td><code>speed</code> (1.0 normal), <code>can_fly</code>, <code>can_build</code>, <code>color</code>, <code>tag</code>. <code>PlayerRules::default()</code> is a normal player.</td></tr>
@@ -731,11 +753,11 @@ cargo run --release -p ourcraft_server --bin ourcraft-server -- \
 <tr><td>Helpers</td><td><code>pixel_art(&amp;rows, &amp;palette)</code> draws a texture from 16 strings; <code>speckled(color, seed)</code> makes a one-colour texture with a light speckle.</td></tr>
 </tbody></table>
     <h3 id="ref-names">Built-in blocks, items, animals and sounds</h3>
-    <p><strong>Blocks:</strong> <code>core:air</code>, <code>core:stone</code>, <code>core:dirt</code>, <code>core:grass</code>, <code>core:sand</code>, <code>core:log</code>, <code>core:leaves</code>, <code>core:planks</code>, <code>core:snow</code>, <code>core:cactus</code>, <code>core:bedrock</code>, <code>core:gravel</code>, <code>core:cobblestone</code>, <code>core:glass</code>, <code>core:bricks</code>, <code>core:lamp</code>, <code>core:water</code>, <code>core:lava</code>, <code>core:clay</code>, <code>core:wool</code>, <code>core:coal_ore</code>, <code>core:iron_ore</code>, <code>core:gold_ore</code>, <code>core:diamond_ore</code>, <code>core:iron_block</code>, <code>core:gold_block</code>, <code>core:diamond_block</code>, <code>core:crafting_table</code>, <code>core:furnace</code>, <code>core:chest</code>, <code>core:torch</code>, <code>core:door</code>, <code>core:trapdoor</code>, <code>core:fence</code>, <code>core:ladder</code>, <code>core:sign</code>, <code>core:bed</code>, <code>core:planks_stairs</code>, <code>core:planks_slab</code>, <code>core:cobblestone_stairs</code>, <code>core:cobblestone_slab</code>, <code>core:stone_stairs</code>, <code>core:stone_slab</code>, <code>core:bricks_stairs</code>, <code>core:bricks_slab</code> (<code>core:snow</code> is snowy grass). Paint
+    <p><strong>Blocks:</strong> <code>core:air</code>, <code>core:stone</code>, <code>core:dirt</code>, <code>core:grass</code>, <code>core:sand</code>, <code>core:log</code>, <code>core:leaves</code>, <code>core:planks</code>, <code>core:snow</code>, <code>core:cactus</code>, <code>core:bedrock</code>, <code>core:gravel</code>, <code>core:cobblestone</code>, <code>core:glass</code>, <code>core:bricks</code>, <code>core:lamp</code>, <code>core:water</code>, <code>core:lava</code>, <code>core:clay</code>, <code>core:wool</code>, <code>core:coal_ore</code>, <code>core:iron_ore</code>, <code>core:gold_ore</code>, <code>core:diamond_ore</code>, <code>core:iron_block</code>, <code>core:gold_block</code>, <code>core:diamond_block</code>, <code>core:crafting_table</code>, <code>core:furnace</code>, <code>core:chest</code>, <code>core:torch</code>, <code>core:door</code>, <code>core:trapdoor</code>, <code>core:fence</code>, <code>core:ladder</code>, <code>core:sign</code>, <code>core:bed</code>, <code>core:fence_gate</code>, <code>core:planks_stairs</code>, <code>core:planks_slab</code>, <code>core:cobblestone_stairs</code>, <code>core:cobblestone_slab</code>, <code>core:stone_stairs</code>, <code>core:stone_slab</code>, <code>core:bricks_stairs</code>, <code>core:bricks_slab</code> (<code>core:snow</code> is snowy grass). Paint
       Blocks adds <code>paint:red</code>, <code>paint:orange</code>, <code>paint:yellow</code>,
       <code>paint:lime</code>, <code>paint:blue</code>, <code>paint:purple</code>,
       <code>paint:pink</code>, <code>paint:white</code> and <code>paint:rainbow_lamp</code>.</p>
-    <p><strong>Items</strong> (for recipes and <code>food</code>): every block above, plus <code>core:stick</code>, <code>core:coal</code>, <code>core:iron_ingot</code>, <code>core:gold_ingot</code>, <code>core:diamond</code>, <code>core:apple</code>, <code>core:golden_apple</code>, <code>core:egg</code>, <code>core:fried_egg</code>, <code>core:brick</code>, <code>core:clay_ball</code>, <code>core:shears</code>, <code>core:wood_pickaxe</code>, <code>core:stone_axe</code>, <code>core:iron_shovel</code>, <code>core:diamond_pickaxe</code>
+    <p><strong>Items</strong> (for recipes and <code>food</code>): every block above, plus <code>core:stick</code>, <code>core:coal</code>, <code>core:iron_ingot</code>, <code>core:gold_ingot</code>, <code>core:diamond</code>, <code>core:apple</code>, <code>core:golden_apple</code>, <code>core:egg</code>, <code>core:fried_egg</code>, <code>core:brick</code>, <code>core:clay_ball</code>, <code>core:shears</code>, <code>core:bucket</code>, <code>core:water_bucket</code>, <code>core:lava_bucket</code>, <code>core:wood_pickaxe</code>, <code>core:stone_axe</code>, <code>core:iron_shovel</code>, <code>core:diamond_pickaxe</code>
       (tools are <code>core:</code> + wood, stone, iron or diamond + <code>_pickaxe</code>,
       <code>_axe</code> or <code>_shovel</code>).</p>
     <p><strong>Animals:</strong> <code>core:sheep</code>, <code>core:pig</code>, <code>core:cow</code>, <code>core:chicken</code>.</p>

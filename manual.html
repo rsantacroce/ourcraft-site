@@ -51,7 +51,7 @@
           <li><a href="#recipes">Crafting recipes</a></li>
           <li><a href="#furnace">The furnace</a></li>
           <li><a href="#health">Health and food</a></li>
-          <li><a href="#monsters">Monsters at night</a></li>
+          <li><a href="#monsters">Monsters at night (and in caves)</a></li>
           <li><a href="#build-more">Doors, stairs, chests, signs, beds</a></li>
           <li><a href="#animals">Animals</a></li>
           <li><a href="#light">Light, water and weather</a></li>
@@ -146,7 +146,7 @@ cd ourcraft</code></pre></li>
         <tr><td>Break a block / use a gadget</td><td>Left click (hold to repeat)</td><td>Right trigger</td><td>Press and hold</td></tr>
         <tr><td>Place a block</td><td>Right click</td><td>Left trigger</td><td>Quick tap</td></tr>
         <tr><td>Use a door, chest, furnace, crafting table, bed or sign</td><td>Right click (hold <kbd>Shift</kbd> to place a block against it instead)</td><td>Left trigger</td><td>Quick tap</td></tr>
-        <tr><td>Eat (food in hand, survival)</td><td>Hold right click</td><td>Hold left trigger</td><td>Not yet</td></tr>
+        <tr><td>Eat (food in hand, survival)</td><td>Hold right click</td><td>Hold left trigger</td><td>Hold the Eat button</td></tr>
         <tr><td>Pet, feed or shear an animal</td><td>Right click on it</td><td>Left trigger</td><td>Quick tap</td></tr>
         <tr><td>Bop a monster (or an animal: it hops away)</td><td>Left click on it</td><td>Right trigger</td><td>Press</td></tr>
         <tr><td>Drop one item (<kbd>Ctrl</kbd>: the whole stack)</td><td><kbd>Q</kbd></td><td></td><td></td></tr>
@@ -327,11 +327,13 @@ cd ourcraft</code></pre></li>
         <tr><td>3 Doors</td><td><code>PP / PP / PP</code></td><td>P = planks</td></tr>
         <tr><td>2 Trapdoors</td><td><code>PPP / PPP</code></td><td>P = planks</td></tr>
         <tr><td>3 Fences</td><td><code>P#P / P#P</code></td><td>P = planks, # = stick</td></tr>
+        <tr><td>Fence Gate</td><td><code>#P# / #P#</code></td><td># = stick, P = planks</td></tr>
         <tr><td>3 Ladders</td><td><code>#.# / ### / #.#</code></td><td># = stick</td></tr>
         <tr><td>3 Signs</td><td><code>PPP / PPP / .#.</code></td><td>P = planks, # = stick</td></tr>
         <tr><td>4 Stairs</td><td><code>X.. / XX. / XXX</code></td><td rowspan="2">X = planks, cobblestone, stone or bricks</td></tr>
         <tr><td>6 Slabs</td><td><code>XXX</code></td></tr>
         <tr><td>Shears</td><td><code>.I / I.</code></td><td>I = iron ingot</td></tr>
+        <tr><td>Bucket</td><td><code>I.I / .I.</code></td><td>I = iron ingot</td></tr>
         <tr><td>Bricks (block)</td><td><code>BB / BB</code></td><td>B = brick (from clay balls in the furnace)</td></tr>
         <tr><td>2 Lamps</td><td><code>GGG / GCG / GGG</code></td><td>G = glass, C = coal</td></tr>
         <tr><td>Block of Iron/Gold/Diamond</td><td><code>XXX / XXX / XXX</code></td><td>X = ingots or diamonds (and back: one block gives 9)</td></tr>
@@ -360,35 +362,40 @@ cd ourcraft</code></pre></li>
         egg) or golden apples (they heal too).</li>
       <li>Falling from high up hurts (into water is always safe), staying under water too long
         hurts, and lava stings.</li>
+      <li>Your hearts and food are saved: if you stop playing hungry, you're still hungry when
+        you come back.</li>
       <li>If your hearts run out you <strong>faint</strong> and wake up in your bed (or where you
         started), with everything you were carrying. Being hungry can't make you faint by
         itself.</li>
     </ul>
 
-    <h3 id="monsters">Monsters at night</h3>
-    <p>At night two silly monsters come out near players in survival: the <strong>Grumble</strong>
+    <h3 id="monsters">Monsters at night (and in caves)</h3>
+    <p>At night, and in dark caves at any time, two silly monsters come out near players in
+      survival: the <strong>Grumble</strong>
       (a grumpy teal fellow in purple shorts) and the <strong>Bouncer</strong> (a purple jelly
       that hops). They follow you and bonk you for a heart or half a heart. Bop them back with
       left click: a few hits (fewer with a tool) and they vanish in confetti, sometimes leaving
-      a lump of coal. At sunrise they all puff away. Inside a lit-up house with a door you're
-      safe enough, and a bed skips the night.</p>
+      a lump of coal. At sunrise the ones outside puff away (cave monsters stay in their
+      caves). They never appear where torches or lamps light things up, so light your house
+      and your mine, and a bed skips the night.</p>
     <p>Don't want monsters at all? Type <code>/peaceful</code>: no monsters and no hunger, for
       the whole world (type it again to switch back).</p>
 
     <h3 id="build-more">Doors, stairs, chests, signs, beds</h3>
     <ul>
-      <li><strong>Doors and trapdoors:</strong> right click to open and close.</li>
+      <li><strong>Doors, trapdoors and fence gates:</strong> right click to open and close.</li>
       <li><strong>Stairs and slabs:</strong> you walk up them without jumping. Stairs climb away
         from you; a slab placed against the underside of a block goes at the top.</li>
-      <li><strong>Fences</strong> join up with each other and with walls.</li>
+      <li><strong>Fences</strong> join up with each other, with fence gates and with walls.</li>
       <li><strong>Ladders:</strong> place on a wall, then hold jump to climb (and "down" to go
         down).</li>
       <li><strong>Chests</strong> hold 27 stacks. Everyone on the server sees the same things
         inside.</li>
       <li><strong>Signs:</strong> right click to write up to four lines (Enter for the next
-        line, Esc when you're done). Everyone sees what you write.</li>
-      <li><strong>Beds:</strong> right click to set where you wake up. At night, if everyone
-        online is in bed, it's morning.</li>
+        line, Esc when you're done; on a tablet, tap the letters on the screen). Everyone sees
+        what you write.</li>
+      <li><strong>Beds:</strong> right click to set where you wake up. At night you lie down in
+        it; if everyone online is in bed, it's morning. Move to get up.</li>
     </ul>
 
     <h3 id="animals">Animals</h3>
@@ -400,6 +407,9 @@ cd ourcraft</code></pre></li>
       <li><strong>Shears</strong> on a sheep give wool; it grows back. Chickens lay
         <strong>eggs</strong> now and then.</li>
       <li>In creative, <code>/summon sheep</code> (or pig, cow, chicken) calls one over.</li>
+      <li>Animals you look after (pet, feed, shear, or ones born or summoned) are
+        <strong>yours</strong>: they stay, and they're still there next time you play. Wild
+        ones wander off when nobody's around. A fence keeps yours together.</li>
     </ul>
 
     <h3 id="light">Light, water and weather</h3>
@@ -409,6 +419,8 @@ cd ourcraft</code></pre></li>
       <li><strong>Water</strong> flows: dig next to a lake and it pours into the hole, spreading
         up to seven blocks. <strong>Lava</strong> flows too, slowly; where lava meets water it
         turns to stone. Sand and gravel fall if there's nothing under them.</li>
+      <li>A <strong>bucket</strong> scoops up still water or lava (right click it) and pours it
+        out again somewhere else: handy for a pond in the garden. Take care with lava!</li>
       <li>Now and then it <strong>rains</strong> (or snows where it's snowy). <code>/weather
         clear</code> brings the sun back.</li>
     </ul>
@@ -616,6 +628,9 @@ cd ourcraft</code></pre></li>
       <li><strong>Buttons:</strong> <em>Jump</em>, <em>Down</em>, <em>Fly</em> (creative),
         <em>Bag</em> (inventory, top right) and <em>Menu</em> (top left). Tap a hotbar slot to
         select it.</li>
+      <li><strong>Eating:</strong> with food in your hand (survival), an <em>Eat</em> button
+        appears next to Jump: hold it.</li>
+      <li><strong>Signs:</strong> a keyboard appears on the screen when you write on one.</li>
       <li><strong>Splat Squad:</strong> tap or hold to use your gadget.</li>
     </ul>
     <p><strong>Installing:</strong> iPad/iPhone builds come from the Xcode project in
