@@ -53,6 +53,7 @@
           <li><a href="#health">Health and food</a></li>
           <li><a href="#monsters">Monsters at night (and in caves)</a></li>
           <li><a href="#build-more">Doors, stairs, chests, signs, beds</a></li>
+          <li><a href="#farming">Farming</a></li>
           <li><a href="#animals">Animals</a></li>
           <li><a href="#light">Light, water and weather</a></li>
         </ol>
@@ -194,8 +195,9 @@ cd ourcraft</code></pre></li>
       border, and its name shows above it. Press <kbd>E</kbd> to open the inventory.</p>
     <img src="images/inventory.jpg" alt="The creative block picker" width="1600" height="900" loading="lazy">
     <ul>
-      <li><strong>Creative:</strong> every block is shown. Click one to put it in your selected
-        hotbar slot.</li>
+      <li><strong>Creative:</strong> every block and item is shown, sorted into tabs
+        (<em>Building</em>, <em>Nature</em>, <em>Food</em>, <em>Tools</em>, <em>Items</em>; the
+        arrows show more pages). Click one to put it in your selected hotbar slot.</li>
       <li><strong>Survival:</strong> you see your backpack (27 slots), your hotbar, and a small
         2×2 <strong>crafting grid</strong>. Click a stack to pick it up (it follows the mouse) and
         click again to put it down, swap it, or add it to a matching stack. Right click picks up
@@ -398,12 +400,68 @@ cd ourcraft</code></pre></li>
         it; if everyone online is in bed, it's morning. Move to get up.</li>
     </ul>
 
+    <h3 id="farming">Farming</h3>
+    <ol class="steps">
+      <li>Make a <strong>hoe</strong> and right click dirt or grass with it: it becomes
+        <strong>farmland</strong>. Farmland near water (up to 4 blocks away) turns dark and wet,
+        and plants grow faster on it.</li>
+      <li>Get <strong>seeds</strong> by breaking tall grass. Right click farmland with them to
+        plant. Carrots and potatoes are planted as they are; you find them growing wild in
+        meadows now and then.</li>
+      <li>Wait a few minutes. When wheat is golden, break it: you get wheat and more seeds.
+        Breaking a plant too early just gives the seed back.</li>
+    </ol>
+    <ul>
+      <li><strong>Pumpkins and melons:</strong> plant their seeds on farmland. When the stem is
+        grown, it puts a pumpkin or melon on the ground next to it (leave space!). Melons break
+        into slices.</li>
+      <li><strong>Sugar cane</strong> grows on sand, dirt or grass right next to water, up to
+        three tall. It makes sugar and paper.</li>
+      <li><strong>Mushrooms</strong> grow in forests and on cave floors; a red and a brown one
+        make mushroom stew.</li>
+      <li><strong>Composter:</strong> put seeds, plants and food scraps in it (right click). When
+        it's full, right click again for <strong>bone meal</strong>. Bone meal on a plant makes it
+        grow at once; on grass it sprouts tall grass.</li>
+      <li><strong>Cake:</strong> place it, then right click to eat a slice (seven slices in a
+        cake).</li>
+      <li>Soup and stew leave you the bowl; milk leaves you the bucket. Crafting a cake gives the
+        milk buckets back too.</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Makes</th><th>Shape</th><th>With</th></tr></thead>
+      <tbody>
+        <tr><td>Hoe</td><td><code>XX / .# / .#</code></td><td>X = planks, cobblestone, iron ingot or diamond; # = stick</td></tr>
+        <tr><td>Bread</td><td><code>WWW</code></td><td>W = wheat</td></tr>
+        <tr><td>8 Cookies</td><td><code>WSW</code></td><td>W = wheat, S = sugar</td></tr>
+        <tr><td>Cake</td><td><code>MMM / SES / WWW</code></td><td>M = milk bucket, S = sugar, E = egg, W = wheat</td></tr>
+        <tr><td>Pumpkin Pie</td><td>pumpkin + sugar + egg</td><td>any squares</td></tr>
+        <tr><td>4 Bowls</td><td><code>P.P / .P.</code></td><td>P = planks</td></tr>
+        <tr><td>Beetroot Soup</td><td>bowl + 6 beetroots</td><td>any squares</td></tr>
+        <tr><td>Mushroom Stew</td><td>bowl + red + brown mushroom</td><td>any squares</td></tr>
+        <tr><td>Sugar</td><td>sugar cane</td><td></td></tr>
+        <tr><td>3 Paper</td><td><code>CCC</code></td><td>C = sugar cane</td></tr>
+        <tr><td>4 Pumpkin Seeds</td><td>pumpkin</td><td></td></tr>
+        <tr><td>Melon Seeds</td><td>melon slice</td><td></td></tr>
+        <tr><td>Melon</td><td><code>MMM / MMM / MMM</code></td><td>M = melon slice</td></tr>
+        <tr><td>Pumpkin Lantern</td><td><code>P / T</code></td><td>P = pumpkin, T = torch (it glows!)</td></tr>
+        <tr><td>Composter</td><td><code>P.P / P.P / PPP</code></td><td>P = planks</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>In the furnace a potato becomes a <strong>baked potato</strong>. Foods and how filling they
+      are: cookie and melon slice a little, carrot and bread more, baked potato and soups a lot,
+      pumpkin pie the most.</p>
+
     <h3 id="animals">Animals</h3>
     <ul>
       <li>Sheep, pigs, cows and chickens wander the grass. Right click one with an empty hand
         to pet it (it hops with hearts).</li>
-      <li>Hold an <strong>apple</strong> and they follow you. Feed apples to two of the same kind
-        and they have a baby, which grows up after a while.</li>
+      <li>Hold their favourite food and they follow you: <strong>wheat</strong> for sheep and
+        cows, <strong>carrots</strong> for pigs, <strong>seeds</strong> for chickens (an apple
+        works for all of them). Feed two of the same kind and they have a baby, which grows up
+        after a while.</li>
+      <li>A <strong>bucket</strong> on a cow gives milk.</li>
       <li><strong>Shears</strong> on a sheep give wool; it grows back. Chickens lay
         <strong>eggs</strong> now and then.</li>
       <li>In creative, <code>/summon sheep</code> (or pig, cow, chicken) calls one over.</li>
