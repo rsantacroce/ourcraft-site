@@ -62,6 +62,7 @@
           <li><a href="#animals">Animals</a></li>
           <li><a href="#magic">Magic</a></li>
           <li><a href="#light">Light, water and weather</a></li>
+          <li><a href="#cloud-isles">The Cloud Isles</a></li>
         </ol>
       </li>
       <li><a href="#friends">Playing with friends</a></li>
@@ -92,8 +93,9 @@
 
     <!-- ============================================================ -->
     <h2 id="install">1. Getting started</h2>
-    <p>Ourcraft is built from its source code with Rust. This takes a few minutes the first
-      time; after that it starts in seconds.</p>
+    <p>The easiest way: <a href="index.html#get-it">download the game</a> for macOS, Windows or
+      Linux, unzip it and open it. To build it yourself from its source code with Rust instead
+      (a few minutes the first time; after that it starts in seconds):</p>
     <ol class="steps">
       <li>Install Rust from <a href="https://rustup.rs">rustup.rs</a> (one command; accept the
         defaults).</li>
@@ -157,8 +159,9 @@ cd ourcraft</code></pre></li>
         <tr><td>Pet, feed or shear an animal</td><td>Right click on it</td><td>Left trigger</td><td>Quick tap</td></tr>
         <tr><td>Bop a monster (or an animal: it hops away)</td><td>Left click on it</td><td>Right trigger</td><td>Press</td></tr>
         <tr><td>Drop one item (<kbd>Ctrl</kbd>: the whole stack)</td><td><kbd>Q</kbd></td><td></td><td></td></tr>
-        <tr><td>Copy the block you're looking at (creative)</td><td>Middle click</td><td>D-pad up</td><td></td></tr>
-        <tr><td>Choose a hotbar slot</td><td><kbd>1</kbd>–<kbd>9</kbd> or mouse wheel</td><td>Bumpers</td><td>Tap the slot</td></tr>
+        <tr><td>Copy the block you're looking at (creative)</td><td>Middle click (can be switched off in <a href="#settings">Settings</a>)</td><td>D-pad up</td><td></td></tr>
+        <tr><td>Camera: first person → behind you → in front of you</td><td><kbd>F5</kbd></td><td>D-pad down</td><td><em>View</em> button</td></tr>
+        <tr><td>Choose a hotbar slot</td><td><kbd>1</kbd>–<kbd>9</kbd> or mouse wheel (the wheel can be switched off in <a href="#settings">Settings</a>)</td><td>Bumpers</td><td>Tap the slot</td></tr>
         <tr><td>Inventory</td><td><kbd>E</kbd></td><td>Y</td><td><em>Bag</em> button</td></tr>
         <tr><td>Chat / command</td><td><kbd>Enter</kbd> / <kbd>/</kbd></td><td></td><td></td></tr>
         <tr><td>Pause menu</td><td><kbd>Esc</kbd></td><td></td><td><em>Menu</em> button</td></tr>
@@ -709,6 +712,31 @@ cd ourcraft</code></pre></li>
       <li>Now and then it <strong>rains</strong> (or snows where it's snowy). <code>/weather
         clear</code> brings the sun back.</li>
     </ul>
+    <h3 id="cloud-isles">The Cloud Isles</h3>
+    <p>High above the sky there's a second world: floating islands of mint-green grass with
+      cherry, birch and oak trees, and soft clouds drifting below. No monsters, no rain, and
+      the nights never get very dark. You get there through a <strong>sunstone portal</strong>.</p>
+    <ol class="steps">
+      <li><strong>Make sunstone:</strong> eight glass around a gold ingot makes four
+        (<code>GGG / GIG / GGG</code>, G = glass, I = gold ingot).</li>
+      <li><strong>Build a frame:</strong> a standing ring of sunstone around an empty space at
+        least 2 blocks wide and 3 tall (up to 21 × 21). The corners don't matter, so the
+        smallest frame takes 10 sunstone.</li>
+      <li><strong>Light it with a feather:</strong> right click the frame holding a
+        <strong>feather</strong> (chickens drop one now and then, and you can sometimes catch
+        one fishing). The frame fills with a shimmering cloud portal. In survival the feather
+        is used up.</li>
+      <li><strong>Step in</strong> and stand still for a moment. Whoosh!</li>
+    </ol>
+    <ul>
+      <li>You come out in a portal on the other side (one is built for you if there isn't one
+        nearby), so the way home is always there. Step out of it first before going back.</li>
+      <li>Falling off an island doesn't hurt: you float down through the clouds and land at
+        home. Landing on a cloud never hurts either.</li>
+      <li>Breaking the frame puts the portal out.</li>
+      <li>Friends in the other world can't see you (and you can't see them) until you're in the
+        same world again.</li>
+    </ul>
 
     <!-- ============================================================ -->
     <h2 id="friends">6. Playing with friends</h2>
@@ -725,7 +753,8 @@ cd ourcraft</code></pre></li>
       port is <strong>41700</strong> (UDP). To play over the internet, the host needs to forward
       that port on their router, or run a <a href="#servers">server</a> somewhere reachable.</p>
     <h3>What you'll see</h3>
-    <p>Other players appear as blocky characters with their name above their head. Every block
+    <p>Other players appear as blocky characters wearing their <a href="#skins">skin</a>, with
+      their name above their head. Every block
       anyone breaks or places shows up for everyone right away. Change your name in
       <a href="#settings">Settings</a> before joining.</p>
 
@@ -851,9 +880,21 @@ cd ourcraft</code></pre></li>
         <tr><td>Touch controls</td><td>Automatic (shown on touch screens), on, or off</td></tr>
         <tr><td>Hide rude words in chat</td><td>On by default</td></tr>
         <tr><td>Show info text</td><td>The FPS, position and help text in the corner (also <kbd>F3</kbd>)</td></tr>
+        <tr><td>Middle click picks block</td><td>On: middle click copies the block you're looking at into your hand (switching the hotbar slot). Switch it off if you keep doing it by accident</td></tr>
+        <tr><td>Mouse wheel changes slot</td><td>On: scrolling the mouse wheel moves along the hotbar. Switch it off if the wheel keeps changing what you're holding; the number keys <kbd>1</kbd>–<kbd>9</kbd> still work</td></tr>
+        <tr><td>Skin</td><td>How you look: <span>&lt;</span> and <span>&gt;</span> go through the skins (see below)</td></tr>
       </tbody>
     </table>
     </div>
+    <h3 id="skins">Skins</h3>
+    <p>Pick how you look under <strong>Settings → Skin</strong>. There are six built-in skins:
+      Explorer, Miner, Gardener, Knight, Astronaut and Robot. Press <kbd>F5</kbd> in a game to
+      see yourself.</p>
+    <p><strong>Your own skin:</strong> put a 64 × 64 skin picture (PNG, the classic block-game
+      layout, so skin files you already have work; older 64 × 32 ones too) in the
+      <code>skins</code> folder next to <code>settings.txt</code>. It shows up in the Skin list.
+      If a file can't be used, Settings says why in red and you get the Explorer skin.
+      Everyone you play with sees your skin.</p>
     <p>Settings are saved in <code>settings.txt</code> next to your worlds folder:</p>
     <ul>
       <li>macOS: <code>~/Library/Application Support/Ourcraft/</code></li>
