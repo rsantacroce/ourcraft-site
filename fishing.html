@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="A step-by-step tutorial for children: make an Ourcraft fishing mod in EELisp, with fish you draw yourself, places to fish, rods, a fish market and cooking.">
+<link rel="alternate" hreflang="en" href="https://rsantacroce.github.io/ourcraft-site/fishing.html">
+<link rel="alternate" hreflang="pt-BR" href="https://rsantacroce.github.io/ourcraft-site/fishing-pt-br.html">
+<link rel="alternate" hreflang="es-ES" href="https://rsantacroce.github.io/ourcraft-site/fishing-es.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <title>Fishing Fun Mod · Ourcraft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,12 +124,13 @@ body { margin: 0 }
 .sitebar { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; padding-block: .9rem; border-bottom: 1px solid var(--line); font: 700 .95rem/1.2 var(--font-body) }
 .sitebar .home { font: 800 1.2rem/1 var(--font-display); color: var(--ink); text-decoration: none; margin-right: auto }
 .sitebar a { color: var(--ink-soft) }
+.langs { font-weight: 400 } .langs a[aria-current] { color: var(--ink); font-weight: 700; text-decoration: none }
 .notice { background: var(--water-deep); border-left: 4px solid var(--perch); border-radius: 8px; padding: .7rem 1rem; font-size: .95rem }
 footer { padding-block: 2rem; text-align: center; font-family: var(--font-display); font-size: 1.4rem }
 </style>
 </head>
 <body>
-<div class="col sitebar"><a class="home" href="./">Ourcraft</a><a href="manual.html">Manual</a><a href="modding.html">Modding</a><a href="https://github.com/rsantacroce/ourcraft">GitHub</a></div>
+<div class="col sitebar"><a class="home" href="./">Ourcraft</a><a href="manual.html">Manual</a><a href="modding.html">Modding</a><a href="https://github.com/rsantacroce/ourcraft">GitHub</a><span class="langs" aria-label="Language"><a href="fishing.html" lang="en" aria-current="page">English</a> · <a href="fishing-pt-br.html" lang="pt-BR">Português</a> · <a href="fishing-es.html" lang="es-ES">Español</a></span></div>
 
 <header class="col hero">
   <div class="kicker">An Ourcraft mod you make yourself · 8 steps</div>
@@ -305,7 +309,7 @@ footer { padding-block: 2rem; text-align: center; font-family: var(--font-displa
 
 <section id="oops">
   <h2>When something goes wrong</h2>
-  <p>Everyone's code goes wrong sometimes, even grown-up programmers'. When your mod has a problem, the game says so in the <b>chat</b>, starting with <span class="warn">⚠</span>. <b>The script has a problem</b> means the game couldn't read your file: it stops at the first problem, so anything after it is missing too. <b>(on-chat …) failed</b> means something went wrong inside <code>on-chat</code>.</p>
+  <p>Everyone's code goes wrong sometimes, even grown-up programmers'. When your mod has a problem, the game says so in the <b>chat</b>, starting with <span class="warn">(!)</span>. <b>The script has a problem</b> means the game couldn't read your file: it stops at the first problem, so anything after it is missing too. <b>(on-chat …) failed</b> means something went wrong inside <code>on-chat</code>.</p>
   <div class="tablewrap"><table>
     <thead><tr><th>What you see</th><th>What to check</th></tr></thead>
     <tbody>

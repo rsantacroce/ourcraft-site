@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Um tutorial passo a passo para crianças: faça um mod de pesca para o Ourcraft em EELisp, com peixes desenhados por você, lugares para pescar, varas, um mercado de peixe e comida.">
+<link rel="alternate" hreflang="en" href="https://rsantacroce.github.io/ourcraft-site/fishing.html">
+<link rel="alternate" hreflang="pt-BR" href="https://rsantacroce.github.io/ourcraft-site/fishing-pt-br.html">
+<link rel="alternate" hreflang="es-ES" href="https://rsantacroce.github.io/ourcraft-site/fishing-es.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<title>Pesca Divertida · Ourcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a pond you scroll down through. One narrow reading column, code blocks that may run wider, a sticky strip of the 8 steps. */
+:root {
+  --water: #e6f3f6;        /* page: shallow pond */
+  --water-deep: #cfe7ee;   /* panels */
+  --ink: #12323d;          /* text: deep-water ink */
+  --ink-soft: #4b6b75;
+  --perch: #e8892b;        /* accent: the Puddle Perch */
+  --perch-ink: #8a4300;    /* accent text on light */
+  --reed: #3f8a4c;         /* "make it yours" */
+  --line: #a9cdd7;
+  --code-bg: #0f2a33;
+  --code-fg: #e7f2f4;
+  --code-dim: #7fa3ad;
+  --p1: #ffb454; --p2: #7fd4ff; --p3: #c49bff; --p4: #8be08b; --p5: #ff8fb1;
+  --str: #ffd98a; --kw: #8fe3d0;
+  --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --font-code: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --step-1: clamp(1.05rem, 1rem + .25vw, 1.15rem);
+  --step-2: clamp(1.4rem, 1.2rem + .9vw, 1.8rem);
+  --step-3: clamp(2.2rem, 1.6rem + 3vw, 3.6rem);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --water: #0b1f26; --water-deep: #12313b; --ink: #dcefF3; --ink-soft: #9dbdc6;
+  --perch: #f2a04e; --perch-ink: #ffbf7a; --reed: #7dd08a; --line: #24505d;
+  --code-bg: #071419; --code-fg: #e7f2f4; --code-dim: #6f929c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --water: #0b1f26; --water-deep: #12313b; --ink: #dcefF3; --ink-soft: #9dbdc6;
+  --perch: #f2a04e; --perch-ink: #ffbf7a; --reed: #7dd08a; --line: #24505d;
+  --code-bg: #071419; --code-fg: #e7f2f4; --code-dim: #6f929c; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--water); color: var(--ink); font: 400 var(--step-1)/1.65 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--water) }
+.col { max-width: 44rem; margin-inline: auto }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; text-wrap: balance; margin: 0 }
+h2 { font-size: var(--step-2); font-weight: 800 }
+h3 { font-size: 1.15rem; font-weight: 800 }
+p { margin: 0 }
+a { color: var(--perch-ink) }
+code { font-family: var(--font-code); font-size: .88em; background: var(--water-deep); padding: .05em .3em; border-radius: 4px }
+:focus-visible { outline: 3px solid var(--perch); outline-offset: 2px }
+
+/* Hero */
+.hero { padding-block: 3rem 2rem; display: grid; gap: 1.2rem }
+.hero .kicker { font: 700 .8rem/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+.hero h1 { font-size: var(--step-3); font-weight: 800 }
+.hero h1 em { font-style: normal; color: var(--perch) }
+.hero .lead { font-size: 1.2rem; max-width: 36rem }
+.pond { position: relative; height: 120px; border-radius: 14px; overflow: hidden;
+  background: repeating-linear-gradient(180deg, var(--water-deep) 0 14px, transparent 14px 28px), var(--water-deep) }
+.pond .swim { position: absolute; top: 34px; left: -90px; animation: swim 14s linear infinite }
+.pond .swim.two { top: 70px; animation-duration: 19s; animation-delay: -8s }
+@keyframes swim { to { transform: translateX(calc(44rem + 180px)) } }
+@media (prefers-reduced-motion: reduce) { .pond .swim { animation: none; left: 20% } .pond .swim.two { left: 60% } }
+.makes { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .6rem 1.4rem; padding: 0; margin: 0; list-style: none }
+.makes li { display: flex; gap: .6rem; align-items: baseline }
+.makes b { color: var(--perch-ink) }
+
+/* Step strip */
+nav.steps { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--water); border-bottom: 1px solid var(--line); padding-block: .6rem; margin-bottom: 1rem }
+nav.steps .col { display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none }
+nav.steps a { flex: none; text-decoration: none; color: var(--ink); font: 700 .85rem/1 var(--font-body); padding: .45rem .7rem; border-radius: 999px; border: 1px solid var(--line); background: var(--water) }
+nav.steps a:hover { border-color: var(--perch) }
+
+/* Sections */
+section { padding-block: 2.2rem; border-top: 1px dashed var(--line); display: grid; gap: 1rem }
+.num { display: inline-grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 8px; background: var(--perch); color: #1d1000; font: 800 1.2rem/1 var(--font-display); margin-right: .5rem; vertical-align: .15em }
+.grownup { background: var(--water-deep); border-radius: 14px; padding: 1.2rem 1.3rem; display: grid; gap: .8rem }
+.grownup ol { margin: 0; padding-left: 1.3rem; display: grid; gap: .5rem }
+.try, .yours { border-radius: 12px; padding: .9rem 1.1rem; display: grid; gap: .3rem }
+.try { border: 2px solid var(--perch) }
+.yours { border: 2px dashed var(--reed) }
+.try h3 { color: var(--perch-ink) } .yours h3 { color: var(--reed) }
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .35rem }
+
+/* Code */
+.code { position: relative; min-width: 0 }
+.code pre { margin: 0; background: var(--code-bg); color: var(--code-fg); font: 400 .86rem/1.55 var(--font-code); padding: 1rem 1.1rem; border-radius: 12px; overflow-x: auto; tab-size: 2 }
+.code .copy { position: absolute; top: .5rem; right: .5rem; font: 700 .75rem/1 var(--font-body); padding: .4rem .6rem; border-radius: 6px; border: 0; background: var(--perch); color: #1d1000; cursor: pointer }
+.c-com { color: var(--code-dim); font-style: italic } .c-str { color: var(--str) } .c-kw { color: var(--kw) }
+.d0 { color: var(--p1) } .d1 { color: var(--p2) } .d2 { color: var(--p3) } .d3 { color: var(--p4) } .d4 { color: var(--p5) }
+details.file summary { cursor: pointer; font-weight: 700; color: var(--perch-ink) }
+details.file[open] summary { margin-bottom: .6rem }
+
+/* Fish drawing pad */
+.pad { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; background: var(--water-deep); border-radius: 14px; padding: 1rem }
+.pad textarea { width: 100%; min-height: 12.5rem; resize: vertical; font: 600 1rem/1.25 var(--font-code); letter-spacing: .2em; background: var(--water); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: .6rem }
+.pad .colors { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem }
+.pad label { display: inline-flex; align-items: center; gap: .3rem; font: 700 .9rem var(--font-code) }
+.pad input[type=color] { width: 2.2rem; height: 2rem; border: 1px solid var(--line); border-radius: 6px; padding: 0; background: none }
+.pad .preview { display: grid; gap: .5rem; justify-items: center; align-content: start }
+.pad canvas { width: 128px; height: 128px; image-rendering: pixelated; border-radius: 8px; border: 1px solid var(--line);
+  background: repeating-conic-gradient(var(--water) 0 25%, var(--water-deep) 0 50%) 0 0 / 16px 16px }
+.pad .msg { font-size: .85rem; color: var(--ink-soft); max-width: 10rem; text-align: center }
+.pad .full { grid-column: 1 / -1 }
+@media (max-width: 34rem) { .pad { grid-template-columns: 1fr } }
+
+/* Tables */
+.tablewrap { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: .95rem }
+th, td { text-align: left; vertical-align: top; padding: .5rem .6rem; border-bottom: 1px solid var(--line) }
+th { font: 700 .75rem/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft) }
+td:first-child { white-space: nowrap }
+.warn { color: var(--perch-ink); font-weight: 700 }
+html { padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px) }
+body { margin: 0 }
+.sitebar { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; padding-block: .9rem; border-bottom: 1px solid var(--line); font: 700 .95rem/1.2 var(--font-body) }
+.sitebar .home { font: 800 1.2rem/1 var(--font-display); color: var(--ink); text-decoration: none; margin-right: auto }
+.sitebar a { color: var(--ink-soft) }
+.langs { font-weight: 400 } .langs a[aria-current] { color: var(--ink); font-weight: 700; text-decoration: none }
+.notice { background: var(--water-deep); border-left: 4px solid var(--perch); border-radius: 8px; padding: .7rem 1rem; font-size: .95rem }
+footer { padding-block: 2rem; text-align: center; font-family: var(--font-display); font-size: 1.4rem }
+</style>
+</head>
+<body>
+<div class="col sitebar"><a class="home" href="./">Ourcraft</a><a href="manual.html">Manual</a><a href="modding.html">Modding</a><a href="https://github.com/rsantacroce/ourcraft">GitHub</a><span class="langs" aria-label="Idioma"><a href="fishing.html" lang="en">English</a> · <a href="fishing-pt-br.html" lang="pt-BR" aria-current="page">Português</a> · <a href="fishing-es.html" lang="es-ES">Español</a></span></div>
+
+<header class="col hero">
+  <div class="kicker">Um mod de Ourcraft feito por você · 8 passos</div>
+  <h1>Pesca <em>Divertida</em></h1>
+  <p class="lead">Faça um mod que enche o Ourcraft de peixes desenhados por você, lugares secretos de pesca, varas mágicas, um mercado de peixe e um baita banquete. Você vai escrever tudo numa linguagem de computador chamada EELisp, um passinho de cada vez.</p>
+  <div class="pond" aria-hidden="true"><canvas class="swim" width="16" height="16" data-fish="perch" style="width:64px;height:64px;image-rendering:pixelated"></canvas><canvas class="swim two" width="16" height="16" data-fish="rainbow" style="width:56px;height:56px;image-rendering:pixelated"></canvas></div>
+  <p class="notice"><b>Novidade!</b> Mods em EELisp são novinhos em folha. Se o seu arquivo <code>.el</code> não aparece na tela de <b>Mods</b>, o seu Ourcraft é antigo demais para eles: atualize o jogo primeiro. Adultos que querem fazer mods em Rust podem ler o <a href="modding.html">guia de modding</a> (em inglês).</p>
+  <ul class="makes">
+    <li><b>7 peixes</b> que você desenha com letras, da Perca-da-Poça até o raro Peixe Arco-Íris</li>
+    <li><b>5 lugares</b> para pescar: lagos, água funda, cavernas, neve e de noite</li>
+    <li><b>2 varas</b> para fabricar: a Vara da Sorte e a Vara Dourada</li>
+    <li><b>Um mercado de peixe</b> para vender o que você pescou e ganhar Moedas de Peixe</li>
+    <li><b>Comida</b>: um Sanduíche de Peixe e o Banquete do Pescador</li>
+    <li><b>Um diário</b> que conta os peixes que você já achou</li>
+  </ul>
+</header>
+
+<nav class="steps" aria-label="Passos"><div class="col">
+  <a href="#ready">Preparar</a><a href="#step-1">1 Olá</a><a href="#step-2">2 Desenhar</a><a href="#step-3">3 Pescar</a><a href="#step-4">4 Muitos</a><a href="#step-5">5 Lugares</a><a href="#step-6">6 Varas</a><a href="#step-7">7 Mercado</a><a href="#step-8">8 Banquete</a><a href="#oops">Ops!</a><a href="#cheat">Colinha</a>
+</div></nav>
+
+<main class="col">
+
+<section id="ready">
+  <div class="grownup">
+    <h2>Para um adulto: preparando tudo</h2>
+    <p>Leva uns 5 minutos. Depois disso, a criança consegue fazer o resto sozinha.</p>
+    <ol>
+      <li><b>Um editor de texto</b> que salve texto simples. O <a href="https://code.visualstudio.com">Visual Studio Code</a> é grátis e colore os parênteses que fazem par. No Windows, o Bloco de Notas serve. No Mac, o TextEdit serve depois de <b>Formatar → Converter em Texto Simples</b>.</li>
+      <li><b>A pasta de mods.</b> No Ourcraft, clique em <b>Play</b> (Jogar) e depois no botão <b>Mods</b> ao lado de um mundo. Essa tela mostra onde fica a pasta (no Mac, <code>~/Library/Application Support/Ourcraft/mods</code>). Crie ali um arquivo chamado <b><code>fishing.el</code></b>. O nome é o mesmo durante todo o tutorial.</li>
+      <li><b>Um mundo.</b> Crie um mundo novo no modo <b>Creative</b> (Criativo). O inventário dele (<b>E</b>) tem todos os itens, inclusive a vara de pescar e tudo o que o mod adiciona. Mais tarde, um mundo <b>Survival</b> (Sobrevivência) é melhor para fabricar e vender coisas.</li>
+      <li><b>Ligue o mod.</b> Clique em <b>Mods</b> ao lado do mundo e clique em <b>Fishing</b> até aparecer <b>on</b> (ligado).</li>
+    </ol>
+    <p><b>Para testar uma mudança:</b> salve o arquivo, aperte <b>Esc → Save and quit to title</b> (salvar e voltar ao título) e depois dê <b>Play</b> no mundo de novo. O jogo lê o mod toda vez que um mundo abre.</p>
+  </div>
+</section>
+
+<section id="step-1">
+  <h2><span class="num">1</span>Diga olá</h2>
+  <p>Coloque isto no <code>fishing.el</code>:</p>
+  <div class="code" data-src="1-hello"></div>
+  <div class="try"><h3>Teste</h3><p>Entre no mundo e você vai ver a mensagem de olá. Aperte <b>/</b>, digite <code>/pescar</code> e aperte <b>Enter</b>.</p></div>
+  <h3>O que está acontecendo?</h3>
+  <p>No EELisp, tudo fica dentro de <b>parênteses</b>. A primeira palavra diz o que fazer, e o resto é com o que fazer. <code>(tell player "Logo, logo você vai pescar aqui!")</code> quer dizer "<b>diga</b> (tell) para este <b>jogador</b> (player) esta mensagem".</p>
+  <p>Os parênteses nesta página são coloridos em pares, para você ver quais andam juntos.</p>
+  <p><code>defn</code> <b>define</b> uma coisa que o jogo pode usar. O jogo usa o <code>on-join</code> toda vez que alguém entra, e o <code>on-chat</code> toda vez que alguém escreve no chat. <code>(str "Olá, " name "!")</code> junta palavras. O <code>true</code> no final avisa o jogo: "esse comando era meu", e assim ninguém mais vê o comando.</p>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Mude a mensagem de olá. Crie um segundo comando, <code>/oi</code>, que diz alguma coisa engraçada.</p></div>
+</section>
+
+<section id="step-2">
+  <h2><span class="num">2</span>Desenhe um peixe</h2>
+  <p>Agora, um peixe que você pode segurar. Você <b>desenha ele com letras</b>! Cada letra é uma cor, e um ponto é transparente. Experimente aqui: mude as letras e as cores e veja o peixe mudar.</p>
+  <div class="pad">
+    <div>
+      <textarea id="pad-rows" spellcheck="false" aria-label="O desenho do peixe, uma fileira por linha"></textarea>
+      <div class="colors" id="pad-colors"></div>
+    </div>
+    <div class="preview"><canvas id="pad-canvas" width="16" height="16" aria-label="Como o seu peixe fica"></canvas><div class="msg" id="pad-msg">Até 16 fileiras de até 16 letras.</div></div>
+    <div class="code full" id="pad-code"></div>
+  </div>
+  <p>Depois você conta para o jogo sobre o seu item novo com <code>register-item</code>, igual ao código embaixo da prancheta de desenho. As chaves <code>{ }</code> guardam <b>configurações</b>. Cada configuração tem um nome que começa com <code>:</code> e depois o valor dela:</p>
+  <ul class="plain">
+    <li><code>:name</code> é o nome secreto do item no jogo. Ele começa com <code>fish:</code> e não tem espaços.</li>
+    <li><code>:display</code> é o nome que os jogadores veem.</li>
+    <li><code>:colors</code> diz a cor de cada letra: três números <b>[vermelho verde azul]</b>, cada um de 0 a 255. <code>[255 0 0]</code> é vermelho, <code>[0 0 0]</code> é preto.</li>
+    <li><code>:food 2</code> quer dizer que dá para comer, e enche 2 pontos de fome.</li>
+  </ul>
+  <details class="file"><summary>O arquivo inteiro do passo 2</summary><div class="code" data-src="2-draw-a-fish"></div></details>
+  <div class="try"><h3>Teste</h3><p>Digite <code>/pescar</code> e olhe na sua barra de itens. Esse é o seu peixe!</p></div>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Pinte um peixe roxo com a barriga amarela, ou desenhe um formato novo. Copie o seu código da prancheta de desenho para o seu arquivo.</p></div>
+</section>
+
+<section id="step-3">
+  <h2><span class="num">3</span>Pesque e depois cozinhe</h2>
+  <p>O Ourcraft já tem pesca: segure uma <b>vara de pescar</b>, aponte para a água, clique com o botão direito e espere. O seu mod decide <b>o que</b> morde a isca:</p>
+  <div class="code" data-snip="(defn on-fish-bite (player rod x y z)
+  (tell player &quot;Você pescou uma Perca-da-Poça!&quot;)
+  &quot;fish:perch&quot;)"></div>
+  <p>A última coisa dentro do <code>on-fish-bite</code> é o que o jogador pesca. (<code>x y z</code> dizem onde está a boia. Você vai usar isso no passo 5.)</p>
+  <p>Para cozinhar, coloque <code>:cooks-into "fish:cooked_perch"</code> na perca e registre uma perca cozida com o mesmo desenho, em tons de marrom, e <code>:food 6</code>.</p>
+  <details class="file"><summary>O arquivo inteiro do passo 3</summary><div class="code" data-src="3-catch-and-cook"></div></details>
+  <div class="try"><h3>Teste</h3><p>Pegue uma vara de pescar no inventário (<b>E</b>), clique com o botão direito na água e espere uns segundos. Uma Perca-da-Poça! Cozinhe ela numa <b>fornalha</b>, ou segure o peixe e clique com o botão direito numa <b>fogueira</b>.</p></div>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Faça o peixe cozido encher ainda mais a fome. Qual é o máximo? (É 20: a barra de fome inteirinha.)</p></div>
+</section>
+
+<section id="step-4">
+  <h2><span class="num">4</span>Um monte de peixes</h2>
+  <p>Vamos fazer uma <b>lista</b> de peixes. Cada peixe tem suas configurações dentro de <code>{ }</code>, e a lista toda fica dentro de <code>[ ]</code>. <code>:weight</code> (peso) diz quantas vezes ele morde a isca: peso 10 morde dez vezes mais que peso 1, então o Peixe Arco-Íris é <b>raro</b>.</p>
+  <div class="code" data-snip="(def fish-list
+  [{:id &quot;perch&quot;   :display &quot;Perca-da-Poça&quot;     :body [240 170 60]  :belly [255 230 150] :weight 10}
+   {:id &quot;carp&quot;    :display &quot;Carpa-Bolha&quot;       :body [150 120 200] :belly [220 200 255] :weight 6}
+   {:id &quot;tuna&quot;    :display &quot;Atum Azulão&quot;       :body [40 80 180]   :belly [200 220 240] :weight 3}
+   {:id &quot;rainbow&quot; :display &quot;Peixe Arco-Íris&quot;   :body [255 80 160]  :belly [120 220 255] :weight 1}])"></div>
+  <p>Um <b>loop</b> (repetição) registra todos os peixes: <code>(for-each f fish-list ...)</code> quer dizer "para cada peixe da lista, chame ele de <code>f</code> e faça isto". <code>(dict-get f :body)</code> lê a configuração <code>:body</code> (corpo) desse peixe.</p>
+  <p>Quando algo morde a isca, o mod escolhe um peixe, e de vez em quando uma coisa engraçada:</p>
+  <div class="code" data-snip="(defn on-fish-bite (player rod x y z)
+  (if (chance 8)
+      (do (tell player &quot;Você pescou uma Bota Velha. Eca!&quot;)
+          &quot;fish:old_boot&quot;)
+      (let (f (weighted-pick fish-list))
+        (tell player (str &quot;Você pescou: &quot; (dict-get f :display) &quot;!&quot;))
+        (fish-item f))))"></div>
+  <ul class="plain">
+    <li><code>(chance 8)</code> é verdade 8 vezes em cada 100.</li>
+    <li><code>(if teste isto aquilo)</code> faz <b>isto</b> se o teste for verdade, ou <b>aquilo</b> se não for.</li>
+    <li><code>(let (f ...) ...)</code> dá um nome para uma coisa por um tempinho. Aqui, <code>f</code> é o peixe que mordeu a isca.</li>
+  </ul>
+  <details class="file"><summary>O arquivo inteiro do passo 4</summary><div class="code" data-src="4-many-fish"></div></details>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Coloque um peixe inventado por você na lista. É só uma linha a mais! Dê a ele um nome, cores e um peso, e depois vá pescar ele.</p></div>
+</section>
+
+<section id="step-5">
+  <h2><span class="num">5</span>Lugares para pescar</h2>
+  <p>Cada peixe ganha um <code>:place</code> (lugar): <code>"pond"</code> (lago), <code>"deep"</code> (água funda), <code>"cave"</code> (caverna), <code>"snow"</code> (neve) ou <code>"night"</code> (noite). O mod descobre onde está a boia <b>olhando os blocos</b> em volta dela com <code>(get-block x y z)</code>:</p>
+  <div class="code" data-snip=";; Quatro blocos de água embaixo da boia: água funda.
+(defn deep? (x y z)
+  (every? (fn (d) (= (get-block x (- y d) z) water)) [1 2 3 4]))
+
+;; Pedra em cima da cabeça: uma caverna.
+(defn in-a-cave? (x y z)
+  (let (top (ground-height x z))
+    (and top (> top (+ y 3)))))
+
+(defn fishing-place (x y z)
+  (cond (in-a-cave? x y z) &quot;cave&quot;
+        (snowy? x y z)     &quot;snow&quot;
+        (deep? x y z)      &quot;deep&quot;
+        true               &quot;pond&quot;))"></div>
+  <ul class="plain">
+    <li><code>y</code> vai para <b>cima</b>: <code>(- y 1)</code> é um bloco abaixo, <code>(+ y 1)</code> é um acima.</li>
+    <li>Um nome que termina com <code>?</code>, como <code>deep?</code>, é uma pergunta. A resposta é <code>true</code> (verdade) ou <code>false</code> (falso).</li>
+    <li><code>cond</code> faz as perguntas em ordem e dá a primeira resposta que for verdade. A última, <code>true</code>, pega todo o resto.</li>
+  </ul>
+  <details class="file"><summary>O arquivo inteiro do passo 5</summary><div class="code" data-src="5-fishing-places"></div></details>
+  <div class="try"><h3>Teste</h3><p>Pesque num lago, no mar, numa caverna e de noite. Digite <code>/time night</code> para virar noite na hora.</p></div>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Invente um lugar novo: uma "jungle" (selva) perto de blocos <code>core:leaves</code> (folhas), ou um lugar "high" (alto) quando <code>y</code> passa de 100.</p></div>
+</section>
+
+<section id="step-6">
+  <h2><span class="num">6</span>Varas melhores</h2>
+  <p>Qualquer item com nome terminando em <b><code>_rod</code></b> funciona como vara de pescar. <code>:stack 1</code> quer dizer um por espaço do inventário, igual às ferramentas de verdade. Uma <b>receita</b> deixa você fabricar o item: o desenho é a grade de fabricação 3 por 3, e cada letra é um item.</p>
+  <div class="code" data-snip="(register-recipe {:pattern [&quot;  s&quot;
+                            &quot; st&quot;
+                            &quot;s g&quot;]
+                  :key {:s &quot;core:stick&quot; :t &quot;core:string&quot; :g &quot;core:gold_ingot&quot;}
+                  :result &quot;fish:lucky_rod&quot;})"></div>
+  <p>O <code>on-fish-bite</code> fica sabendo qual vara você usou, então as varas podem ser diferentes. A <b>Vara da Sorte</b> deixa os peixes raros 3 vezes mais fáceis de pescar, e só a <b>Vara Dourada</b> pesca o Peixe Arco-Íris.</p>
+  <details class="file"><summary>O arquivo inteiro do passo 6</summary><div class="code" data-src="6-better-rods"></div></details>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Faça uma Vara de Tralha que só pesca botas velhas, ou uma Vara do Mar que só funciona em água funda.</p></div>
+</section>
+
+<section id="step-7">
+  <h2><span class="num">7</span>O mercado de peixe</h2>
+  <p>Cada peixe ganha um <code>:price</code> (preço), e tem um item novo: a <b>Moeda de Peixe</b>. As moedas são itens de verdade, então elas ficam salvas no seu mundo. <code>/mercado</code> monta uma barraquinha do seu lado. Parado do lado dela:</p>
+  <ul class="plain">
+    <li><code>/vender</code> vende todos os peixes que você carrega. Peixe cozido vale o <b>dobro</b>!</li>
+    <li><code>/loja</code> mostra o que o mercado vende.</li>
+    <li><code>/comprar 1</code> compra a coisa número 1 (a Vara Dourada, por 30 moedas).</li>
+  </ul>
+  <div class="code" data-snip="(take-item player &quot;fish:perch&quot; 999)   ; pega todas as suas percas; diz quantas pegou
+(give-item player &quot;fish:coin&quot; 6)      ; dá 6 moedas"></div>
+  <p>A loja é uma lista, então é fácil colocar mais coisas nela. As suas moedas aparecem no canto da tela, com <code>set-hud</code>.</p>
+  <details class="file"><summary>O arquivo inteiro do passo 7</summary><div class="code" data-src="7-fish-market"></div></details>
+  <div class="try"><h3>Teste</h3><p>Num mundo <b>Survival</b> (Sobrevivência): pesque, cozinhe alguns peixes, monte um mercado, venda e junte moedas para a Vara Dourada.</p></div>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Venda mais coisas na loja. Faça o Peixe Arco-Íris valer 100 moedas. Monte uma barraca maior.</p></div>
+</section>
+
+<section id="step-8">
+  <h2><span class="num">8</span>Um banquete e o seu diário</h2>
+  <p><code>:ingredients</code> quer dizer "coloque isto em qualquer lugar da grade de fabricação":</p>
+  <div class="code" data-snip="(register-recipe {:ingredients [&quot;core:bread&quot; &quot;fish:cooked_perch&quot;] :result &quot;fish:sandwich&quot;})"></div>
+  <p>O <b>Sanduíche de Peixe</b> enche 12 pontos de fome. O <b>Banquete do Pescador</b> precisa de quatro peixes cozidos de quatro lugares diferentes, e te deixa de barriga cheia. O <b>diário</b> lembra dos peixes que você já achou: um tipo novo faz aparecer um título bem grande e confete, e <code>/diario</code> mostra a lista de todos eles.</p>
+  <details class="file" open><summary>O mod pronto</summary><div class="code" data-src="8-feast"></div></details>
+  <div class="yours"><h3>Deixe do seu jeito</h3><p>Dê um prêmio para quem achar todos os peixes: 100 moedas, ou uma Vara Dourada!</p></div>
+</section>
+
+<section id="oops">
+  <h2>Quando alguma coisa dá errado</h2>
+  <p>O código de todo mundo dá errado às vezes, até o dos programadores adultos. Quando o seu mod tem um problema, o jogo avisa no <b>chat</b>, com uma mensagem que começa com <span class="warn">(!)</span>. As mensagens do jogo são em inglês. <b>The script has a problem</b> (o script tem um problema) quer dizer que o jogo não conseguiu ler o seu arquivo: ele para no primeiro problema, então tudo o que vem depois também fica faltando. <b>(on-chat …) failed</b> (falhou) quer dizer que algo deu errado dentro do <code>on-chat</code>.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>O que aparece</th><th>O que conferir</th></tr></thead>
+    <tbody>
+      <tr><td><code>unclosed list</code></td><td>Um <code>(</code>, <code>[</code> ou <code>{</code> está sem o seu par. Conte eles!</td></tr>
+      <tr><td><code>expected function, got number</code></td><td>Uma lista entre parênteses redondos, como <code>(255 0 0)</code>. Listas usam colchetes: <code>[255 0 0]</code>.</td></tr>
+      <tr><td><code>the picture uses the letter z…</code></td><td>Uma letra no <code>:picture</code> que não está no <code>:colors</code>.</td></tr>
+      <tr><td><code>there's already something with that name</code></td><td>Dois itens com o mesmo <code>:name</code>.</td></tr>
+      <tr><td><code>Undefined symbol: …</code></td><td>Um nome escrito errado, ou uma coisa usada antes do seu <code>def</code>.</td></tr>
+      <tr><td><code>there's no block called …</code></td><td>Nomes de blocos começam com <code>core:</code>, como <code>core:stone</code>.</td></tr>
+      <tr><td>Não acontece nada</td><td>O mod está <b>on</b> (ligado) neste mundo? Você salvou e depois deu Play no mundo de novo?</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="cheat">
+  <h2>Colinha</h2>
+  <h3>O jogo chama estes no seu mod</h3>
+  <div class="tablewrap"><table><tbody>
+    <tr><td><code>(defn on-join (player name) …)</code></td><td>alguém entra no jogo</td></tr>
+    <tr><td><code>(defn on-chat (player text) …)</code></td><td>alguém escreve no chat (devolva <code>true</code> se o comando for seu)</td></tr>
+    <tr><td><code>(defn on-fish-bite (player rod x y z) …)</code></td><td>um peixe morde a isca (devolva o que a pessoa pesca)</td></tr>
+    <tr><td><code>(defn on-block-change (player x y z old new) …)</code></td><td>um bloco é quebrado ou colocado (devolva <code>:deny</code> para impedir)</td></tr>
+    <tr><td><code>(defn on-tick (tick) …)</code></td><td>20 vezes por segundo</td></tr>
+  </tbody></table></div>
+  <h3>O seu mod pode fazer isto</h3>
+  <div class="tablewrap"><table><tbody>
+    <tr><td><code>(tell player "oi")</code> · <code>(chat "oi")</code></td><td>uma mensagem para um jogador · para todo mundo</td></tr>
+    <tr><td><code>(show-title "Uau!" 2 player)</code></td><td>texto grandão por 2 segundos</td></tr>
+    <tr><td><code>(set-hud player ["linha 1" "linha 2"])</code></td><td>o painel no canto da tela</td></tr>
+    <tr><td><code>(give-item player "fish:perch" 3)</code></td><td>dá itens</td></tr>
+    <tr><td><code>(take-item player "fish:perch" 3)</code></td><td>pega até 3, e diz quantos pegou</td></tr>
+    <tr><td><code>(count-item player "fish:coin")</code></td><td>quantos a pessoa tem</td></tr>
+    <tr><td><code>(register-item {…})</code> · <code>(register-block {…})</code> · <code>(register-recipe {…})</code></td><td>coisas novas (só no começo do arquivo)</td></tr>
+    <tr><td><code>(get-block x y z)</code> · <code>(set-block x y z "core:stone")</code></td><td>olha · muda um bloco</td></tr>
+    <tr><td><code>(fill x1 y1 z1 x2 y2 z2 "core:glass")</code></td><td>uma caixa inteira de blocos</td></tr>
+    <tr><td><code>(player-pos player)</code></td><td>onde a pessoa está, como <code>[x y z]</code></td></tr>
+    <tr><td><code>(random 6)</code> · <code>(chance 25)</code> · <code>(pick ["a" "b"])</code></td><td>de 0 a 5 · verdade 25 vezes em 100 · um deles</td></tr>
+    <tr><td><code>(confetti x y z)</code> · <code>(hearts x y z)</code> · <code>(sound "pop")</code></td><td>uma festinha</td></tr>
+    <tr><td><code>(time-of-day)</code></td><td>0 é meia-noite, 0.5 é meio-dia</td></tr>
+  </tbody></table></div>
+  <h3>A linguagem</h3>
+  <div class="tablewrap"><table><tbody>
+    <tr><td><code>(def nome valor)</code></td><td>dá um nome para uma coisa</td></tr>
+    <tr><td><code>(defn nome (entradas) …)</code></td><td>cria um comando seu</td></tr>
+    <tr><td><code>(let (a 1 b 2) …)</code></td><td>nomes por um tempinho</td></tr>
+    <tr><td><code>(if teste isto aquilo)</code> · <code>(when teste …)</code> · <code>(cond …)</code></td><td>escolher</td></tr>
+    <tr><td><code>(for-each x lista …)</code></td><td>faz algo para cada coisa de uma lista</td></tr>
+    <tr><td><code>(+ 1 2)</code> <code>(- 5 1)</code> <code>(* 2 3)</code> <code>(/ 10 2)</code></td><td>contas</td></tr>
+    <tr><td><code>(= a b)</code> <code>(&lt; a b)</code> <code>(and …)</code> <code>(or …)</code> <code>(not …)</code></td><td>perguntas</td></tr>
+    <tr><td><code>(str "a" 1 "b")</code></td><td>junta palavras</td></tr>
+    <tr><td><code>[1 2 3]</code> · <code>(nth lista 0)</code></td><td>uma lista · a primeira coisa dela (a contagem começa no 0!)</td></tr>
+    <tr><td><code>{:a 1}</code> · <code>(dict-get d :a)</code></td><td>configurações · ler uma delas</td></tr>
+  </tbody></table></div>
+  <h3>Mais ideias</h3>
+  <ul class="plain">
+    <li>Um <b>campeonato de pesca</b>: quem pescar mais peixes em 3 minutos ganha (conte o tempo com <code>on-tick</code>).</li>
+    <li><b>Tesouro</b>: às vezes você pesca uma chave, ou um mapa.</li>
+    <li>Um <b>peixe gigante</b> que precisa de três mordidas para ser pescado.</li>
+  </ul>
+</section>
+</main>
+<footer>Divirta-se, e mostre para os seus amigos o que você fez!</footer>
+
+
+<script>
+const STEPS = {"1-hello": ";; Pesca Divertida, passo 1: diga olá.\n;;\n;; Uma linha que começa com ; é um recado para pessoas. O jogo pula essa linha.\n\n;; Quando alguém entra no jogo, diga olá.\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n;; Quando alguém escreve no chat.\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (tell player \"Logo, logo você vai pescar aqui!\")\n    true))\n", "2-draw-a-fish": ";; Pesca Divertida, passo 2: desenhe um peixe.\n\n;; Um desenho feito de letras. Cada letra é uma cor:\n;; b = corpo, w = barriga, e = olho, t = rabo. Um ponto é transparente.\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n;; Um item novo: a Perca-da-Poça.\n(register-item {:name \"fish:perch\"\n                :display \"Perca-da-Poça\"\n                :picture fish-shape\n                :colors {:b [240 170 60] :w [255 230 150] :e [20 20 20] :t [240 170 60]}\n                :food 2})\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n;; /pescar te dá um peixe, para você ver como ele é.\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (give-item player \"fish:perch\")\n    (tell player \"Aqui está uma Perca-da-Poça!\")\n    true))\n", "3-catch-and-cook": ";; Pesca Divertida, passo 3: pesque um peixe e depois cozinhe.\n\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n;; :cooks-into diz o que a fornalha ou a fogueira faz com ele.\n(register-item {:name \"fish:perch\"\n                :display \"Perca-da-Poça\"\n                :picture fish-shape\n                :colors {:b [240 170 60] :w [255 230 150] :e [20 20 20] :t [240 170 60]}\n                :food 2\n                :cooks-into \"fish:cooked_perch\"})\n\n;; O mesmo desenho, só que marrom: está cozido!\n(register-item {:name \"fish:cooked_perch\"\n                :display \"Filé de Perca-da-Poça\"\n                :picture fish-shape\n                :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                :food 6})\n\n;; Um peixe mordeu a isca! O que isto devolve é o que você pesca.\n(defn on-fish-bite (player rod x y z)\n  (tell player \"Você pescou uma Perca-da-Poça!\")\n  \"fish:perch\")\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (tell player \"Aponte uma vara de pescar para a água e clique com o botão direito. Depois é só esperar...\")\n    true))\n", "4-many-fish": ";; Pesca Divertida, passo 4: um monte de peixes.\n\n;; ---------------------------------------------------------------\n;; Desenhos\n;; ---------------------------------------------------------------\n\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n(def boot-shape\n  [\"..bbb...\"\n   \"..bbb...\"\n   \"..bbb...\"\n   \"..bbbbb.\"\n   \"..bbbbbb\"\n   \"..ssssss\"])\n\n;; ---------------------------------------------------------------\n;; Os peixes\n;; ---------------------------------------------------------------\n\n;; :weight diz quantas vezes ele morde a isca: 10 morde dez vezes mais que 1.\n(def fish-list\n  [{:id \"perch\"   :display \"Perca-da-Poça\"     :body [240 170 60]  :belly [255 230 150] :weight 10}\n   {:id \"carp\"    :display \"Carpa-Bolha\"       :body [150 120 200] :belly [220 200 255] :weight 6}\n   {:id \"tuna\"    :display \"Atum Azulão\"       :body [40 80 180]   :belly [200 220 240] :weight 3}\n   {:id \"rainbow\" :display \"Peixe Arco-Íris\"   :body [255 80 160]  :belly [120 220 255] :weight 1}])\n\n(defn fish-item (f) (str \"fish:\" (dict-get f :id)))\n(defn cooked-item (f) (str \"fish:cooked_\" (dict-get f :id)))\n\n(for-each f fish-list\n  (register-item {:name (fish-item f)\n                  :display (dict-get f :display)\n                  :picture fish-shape\n                  :colors {:b (dict-get f :body) :w (dict-get f :belly)\n                           :e [20 20 20] :t (dict-get f :body)}\n                  :food 2\n                  :cooks-into (cooked-item f)})\n  (register-item {:name (cooked-item f)\n                  :display (str \"Filé de \" (dict-get f :display))\n                  :picture fish-shape\n                  :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                  :food 6}))\n\n(register-item {:name \"fish:old_boot\" :display \"Bota Velha\"\n                :picture boot-shape :colors {:b [110 70 40] :s [60 40 20]}})\n\n;; ---------------------------------------------------------------\n;; Quem morde a isca?\n;; ---------------------------------------------------------------\n\n;; Um dos peixes, sorteado pelo peso.\n(defn weighted-pick (things)\n  (let (total (sum (map (fn (f) (dict-get f :weight)) things)))\n    (loop (left things roll (random total))\n      (let (f (head left) w (dict-get f :weight))\n        (if (or (< roll w) (empty? (tail left)))\n            f\n            (recur (tail left) (- roll w)))))))\n\n(defn on-fish-bite (player rod x y z)\n  (if (chance 8)\n      (do (tell player \"Você pescou uma Bota Velha. Eca!\")\n          \"fish:old_boot\")\n      (let (f (weighted-pick fish-list))\n        (tell player (str \"Você pescou: \" (dict-get f :display) \"!\"))\n        (fish-item f))))\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (tell player (str \"Existem \" (length fish-list) \" tipos de peixe. Será que você pesca todos?\"))\n    true))\n", "5-fishing-places": ";; Pesca Divertida, passo 5: lugares para pescar.\n\n;; ---------------------------------------------------------------\n;; Desenhos\n;; ---------------------------------------------------------------\n\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n(def boot-shape\n  [\"..bbb...\"\n   \"..bbb...\"\n   \"..bbb...\"\n   \"..bbbbb.\"\n   \"..bbbbbb\"\n   \"..ssssss\"])\n\n;; ---------------------------------------------------------------\n;; Os peixes\n;; ---------------------------------------------------------------\n\n;; :weight diz quantas vezes ele morde a isca: 10 morde dez vezes mais que 1.\n(def fish-list\n  [{:id \"perch\"   :display \"Perca-da-Poça\"     :body [240 170 60]  :belly [255 230 150] :place \"pond\"   :weight 10}\n   {:id \"carp\"    :display \"Carpa-Bolha\"       :body [150 120 200] :belly [220 200 255] :place \"pond\"   :weight 6}\n   {:id \"tuna\"    :display \"Atum Azulão\"       :body [40 80 180]   :belly [200 220 240] :place \"deep\"   :weight 6}\n   {:id \"minnow\"  :display \"Lambari Brilhante\" :body [120 255 200] :belly [230 255 240] :place \"cave\"   :weight 6}\n   {:id \"cod\"     :display \"Bacalhau Gelado\"   :body [180 220 255] :belly [255 255 255] :place \"snow\"   :weight 6}\n   {:id \"star\"    :display \"Truta-Estrela\"     :body [40 40 90]    :belly [255 240 120] :place \"night\"  :weight 4}\n   {:id \"rainbow\" :display \"Peixe Arco-Íris\"   :body [255 80 160]  :belly [120 220 255] :place \"deep\"   :weight 1}])\n\n(defn fish-item (f) (str \"fish:\" (dict-get f :id)))\n(defn cooked-item (f) (str \"fish:cooked_\" (dict-get f :id)))\n\n(for-each f fish-list\n  (register-item {:name (fish-item f)\n                  :display (dict-get f :display)\n                  :picture fish-shape\n                  :colors {:b (dict-get f :body) :w (dict-get f :belly)\n                           :e [20 20 20] :t (dict-get f :body)}\n                  :food 2\n                  :cooks-into (cooked-item f)})\n  (register-item {:name (cooked-item f)\n                  :display (str \"Filé de \" (dict-get f :display))\n                  :picture fish-shape\n                  :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                  :food 6}))\n\n(register-item {:name \"fish:old_boot\" :display \"Bota Velha\"\n                :picture boot-shape :colors {:b [110 70 40] :s [60 40 20]}})\n\n;; ---------------------------------------------------------------\n;; Onde você está pescando?\n;; ---------------------------------------------------------------\n\n(def water (block-id \"core:water\"))\n\n;; Pedra em cima da cabeça: uma caverna.\n(defn in-a-cave? (x y z)\n  (let (top (ground-height x z))\n    (and top (> top (+ y 3)))))\n\n;; Quatro blocos de água embaixo da boia: água funda.\n(defn deep? (x y z)\n  (every? (fn (d) (= (get-block x (- y d) z) water)) [1 2 3 4]))\n\n;; Neve ou gelo por perto.\n(def cold-blocks [(block-id \"core:snow\") (block-id \"core:snow_block\")\n                  (block-id \"core:ice\") (block-id \"core:packed_ice\")])\n(defn cold? (b) (some? (fn (c) (= b c)) cold-blocks))\n(defn snowy? (x y z)\n  (some? (fn (d)\n           (or (cold? (get-block (+ x (nth d 0)) y (+ z (nth d 1))))\n               (cold? (get-block (+ x (nth d 0)) (+ y 1) (+ z (nth d 1))))))\n         [[1 0] [-1 0] [0 1] [0 -1] [2 0] [-2 0] [0 2] [0 -2] [1 1] [-1 -1] [1 -1] [-1 1]]))\n\n(defn night? ()\n  (let (t (time-of-day)) (or (< t 0.23) (> t 0.77))))\n\n(defn fishing-place (x y z)\n  (cond (in-a-cave? x y z) \"cave\"\n        (snowy? x y z)     \"snow\"\n        (deep? x y z)      \"deep\"\n        true               \"pond\"))\n\n;; ---------------------------------------------------------------\n;; Quem morde a isca?\n;; ---------------------------------------------------------------\n\n;; Um dos peixes, sorteado pelo peso.\n(defn weighted-pick (things)\n  (let (total (sum (map (fn (f) (dict-get f :weight)) things)))\n    (loop (left things roll (random total))\n      (let (f (head left) w (dict-get f :weight))\n        (if (or (< roll w) (empty? (tail left)))\n            f\n            (recur (tail left) (- roll w)))))))\n\n(defn choose-fish (place)\n  (let (here (filter (fn (f)\n                       (let (p (dict-get f :place))\n                         (or (= p place)\n                             (and (= p \"night\") (night?)))))\n                     fish-list))\n    (weighted-pick here)))\n\n(defn on-fish-bite (player rod x y z)\n  (if (chance 8)\n      (do (tell player \"Você pescou uma Bota Velha. Eca!\")\n          \"fish:old_boot\")\n      (let (f (choose-fish (fishing-place x y z)))\n        (tell player (str \"Você pescou: \" (dict-get f :display) \"!\"))\n        (fish-item f))))\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (tell player \"Pesque em lagos, em água funda, em cavernas, na neve e de noite!\")\n    true))\n", "6-better-rods": ";; Pesca Divertida, passo 6: varas melhores.\n\n;; ---------------------------------------------------------------\n;; Desenhos\n;; ---------------------------------------------------------------\n\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n(def boot-shape\n  [\"..bbb...\"\n   \"..bbb...\"\n   \"..bbb...\"\n   \"..bbbbb.\"\n   \"..bbbbbb\"\n   \"..ssssss\"])\n\n(def rod-shape\n  [\".......s\"\n   \"......ss\"\n   \".....r.s\"\n   \"....r..s\"\n   \"...r...s\"\n   \"..r....h\"\n   \".r......\"\n   \"r.......\"])\n\n;; ---------------------------------------------------------------\n;; Os peixes\n;; ---------------------------------------------------------------\n\n;; :weight diz quantas vezes ele morde a isca: 10 morde dez vezes mais que 1.\n(def fish-list\n  [{:id \"perch\"   :display \"Perca-da-Poça\"     :body [240 170 60]  :belly [255 230 150] :place \"pond\"   :weight 10}\n   {:id \"carp\"    :display \"Carpa-Bolha\"       :body [150 120 200] :belly [220 200 255] :place \"pond\"   :weight 6}\n   {:id \"tuna\"    :display \"Atum Azulão\"       :body [40 80 180]   :belly [200 220 240] :place \"deep\"   :weight 6}\n   {:id \"minnow\"  :display \"Lambari Brilhante\" :body [120 255 200] :belly [230 255 240] :place \"cave\"   :weight 6}\n   {:id \"cod\"     :display \"Bacalhau Gelado\"   :body [180 220 255] :belly [255 255 255] :place \"snow\"   :weight 6}\n   {:id \"star\"    :display \"Truta-Estrela\"     :body [40 40 90]    :belly [255 240 120] :place \"night\"  :weight 4}\n   {:id \"rainbow\" :display \"Peixe Arco-Íris\"   :body [255 80 160]  :belly [120 220 255] :place \"golden\" :weight 1}])\n\n(defn fish-item (f) (str \"fish:\" (dict-get f :id)))\n(defn cooked-item (f) (str \"fish:cooked_\" (dict-get f :id)))\n\n(for-each f fish-list\n  (register-item {:name (fish-item f)\n                  :display (dict-get f :display)\n                  :picture fish-shape\n                  :colors {:b (dict-get f :body) :w (dict-get f :belly)\n                           :e [20 20 20] :t (dict-get f :body)}\n                  :food 2\n                  :cooks-into (cooked-item f)})\n  (register-item {:name (cooked-item f)\n                  :display (str \"Filé de \" (dict-get f :display))\n                  :picture fish-shape\n                  :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                  :food 6}))\n\n(register-item {:name \"fish:old_boot\" :display \"Bota Velha\"\n                :picture boot-shape :colors {:b [110 70 40] :s [60 40 20]}})\n\n;; ---------------------------------------------------------------\n;; Varas (um item com nome terminando em _rod joga a linha)\n;; ---------------------------------------------------------------\n\n(register-item {:name \"fish:lucky_rod\" :display \"Vara da Sorte\" :stack 1\n                :picture rod-shape :colors {:r [120 80 40] :s [230 230 230] :h [80 220 80]}})\n(register-item {:name \"fish:golden_rod\" :display \"Vara Dourada\" :stack 1\n                :picture rod-shape :colors {:r [255 200 40] :s [255 255 200] :h [255 120 40]}})\n\n;; Uma vara da sorte: igual à vara de pescar, com uma barra de ouro na linha.\n(register-recipe {:pattern [\"  s\" \" st\" \"s g\"]\n                  :key {:s \"core:stick\" :t \"core:string\" :g \"core:gold_ingot\"}\n                  :result \"fish:lucky_rod\"})\n\n;; Uma vara dourada: feita de ouro. Só a vara dourada pesca o Peixe Arco-Íris.\n(register-recipe {:pattern [\"  g\" \" gt\" \"g t\"]\n                  :key {:g \"core:gold_ingot\" :t \"core:string\"}\n                  :result \"fish:golden_rod\"})\n\n;; ---------------------------------------------------------------\n;; Onde você está pescando?\n;; ---------------------------------------------------------------\n\n(def water (block-id \"core:water\"))\n\n;; Pedra em cima da cabeça: uma caverna.\n(defn in-a-cave? (x y z)\n  (let (top (ground-height x z))\n    (and top (> top (+ y 3)))))\n\n;; Quatro blocos de água embaixo da boia: água funda.\n(defn deep? (x y z)\n  (every? (fn (d) (= (get-block x (- y d) z) water)) [1 2 3 4]))\n\n;; Neve ou gelo por perto.\n(def cold-blocks [(block-id \"core:snow\") (block-id \"core:snow_block\")\n                  (block-id \"core:ice\") (block-id \"core:packed_ice\")])\n(defn cold? (b) (some? (fn (c) (= b c)) cold-blocks))\n(defn snowy? (x y z)\n  (some? (fn (d)\n           (or (cold? (get-block (+ x (nth d 0)) y (+ z (nth d 1))))\n               (cold? (get-block (+ x (nth d 0)) (+ y 1) (+ z (nth d 1))))))\n         [[1 0] [-1 0] [0 1] [0 -1] [2 0] [-2 0] [0 2] [0 -2] [1 1] [-1 -1] [1 -1] [-1 1]]))\n\n(defn night? ()\n  (let (t (time-of-day)) (or (< t 0.23) (> t 0.77))))\n\n(defn fishing-place (x y z)\n  (cond (in-a-cave? x y z) \"cave\"\n        (snowy? x y z)     \"snow\"\n        (deep? x y z)      \"deep\"\n        true               \"pond\"))\n\n;; ---------------------------------------------------------------\n;; Quem morde a isca?\n;; ---------------------------------------------------------------\n\n;; Um dos peixes, sorteado pelo peso.\n(defn weighted-pick (things)\n  (let (total (sum (map (fn (f) (dict-get f :weight)) things)))\n    (loop (left things roll (random total))\n      (let (f (head left) w (dict-get f :weight))\n        (if (or (< roll w) (empty? (tail left)))\n            f\n            (recur (tail left) (- roll w)))))))\n\n(defn choose-fish (place rod)\n  (let (lucky (= rod \"fish:lucky_rod\")\n        golden (= rod \"fish:golden_rod\")\n        here (filter (fn (f)\n                       (let (p (dict-get f :place))\n                         (or (= p place)\n                             (and (= p \"night\") (night?))\n                             (and (= p \"golden\") golden))))\n                     fish-list))\n    ;; A vara da sorte deixa os peixes raros (peso menor que 5) três vezes mais fáceis.\n    (weighted-pick\n      (map (fn (f)\n             (if (and lucky (< (dict-get f :weight) 5))\n                 (dict-set f :weight (* 3 (dict-get f :weight)))\n                 f))\n           here))))\n\n(defn on-fish-bite (player rod x y z)\n  (if (chance 8)\n      (do (tell player \"Você pescou uma Bota Velha. Eca!\")\n          \"fish:old_boot\")\n      (let (f (choose-fish (fishing-place x y z) rod))\n        (tell player (str \"Você pescou: \" (dict-get f :display) \"!\"))\n        (fish-item f))))\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada.\")))\n\n(defn on-chat (player text)\n  (when (= text \"/pescar\")\n    (tell player \"Fabrique uma Vara da Sorte ou uma Vara Dourada. Só a Vara Dourada pesca o Peixe Arco-Íris!\")\n    true))\n", "7-fish-market": ";; Pesca Divertida, passo 7: o mercado de peixe.\n\n;; ---------------------------------------------------------------\n;; Desenhos\n;; ---------------------------------------------------------------\n\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n(def boot-shape\n  [\"..bbb...\"\n   \"..bbb...\"\n   \"..bbb...\"\n   \"..bbbbb.\"\n   \"..bbbbbb\"\n   \"..ssssss\"])\n\n(def coin-shape\n  [\"..yyyy..\"\n   \".yyoyyy.\"\n   \"yyoyyyyy\"\n   \"yyoyyyyy\"\n   \"yyyyyyoy\"\n   \".yyyyoy.\"\n   \"..yyyy..\"])\n\n(def rod-shape\n  [\".......s\"\n   \"......ss\"\n   \".....r.s\"\n   \"....r..s\"\n   \"...r...s\"\n   \"..r....h\"\n   \".r......\"\n   \"r.......\"])\n\n;; ---------------------------------------------------------------\n;; Os peixes\n;; ---------------------------------------------------------------\n\n;; :weight diz quantas vezes ele morde a isca: 10 morde dez vezes mais que 1.\n;; :price é quantas moedas ele vale no mercado (peixe cozido vale o dobro).\n(def fish-list\n  [{:id \"perch\"   :display \"Perca-da-Poça\"     :body [240 170 60]  :belly [255 230 150] :place \"pond\"   :weight 10 :price 2}\n   {:id \"carp\"    :display \"Carpa-Bolha\"       :body [150 120 200] :belly [220 200 255] :place \"pond\"   :weight 6  :price 3}\n   {:id \"tuna\"    :display \"Atum Azulão\"       :body [40 80 180]   :belly [200 220 240] :place \"deep\"   :weight 6  :price 5}\n   {:id \"minnow\"  :display \"Lambari Brilhante\" :body [120 255 200] :belly [230 255 240] :place \"cave\"   :weight 6  :price 6}\n   {:id \"cod\"     :display \"Bacalhau Gelado\"   :body [180 220 255] :belly [255 255 255] :place \"snow\"   :weight 6  :price 6}\n   {:id \"star\"    :display \"Truta-Estrela\"     :body [40 40 90]    :belly [255 240 120] :place \"night\"  :weight 4  :price 8}\n   {:id \"rainbow\" :display \"Peixe Arco-Íris\"   :body [255 80 160]  :belly [120 220 255] :place \"golden\" :weight 1  :price 50}])\n\n(defn fish-item (f) (str \"fish:\" (dict-get f :id)))\n(defn cooked-item (f) (str \"fish:cooked_\" (dict-get f :id)))\n\n(for-each f fish-list\n  (register-item {:name (fish-item f)\n                  :display (dict-get f :display)\n                  :picture fish-shape\n                  :colors {:b (dict-get f :body) :w (dict-get f :belly)\n                           :e [20 20 20] :t (dict-get f :body)}\n                  :food 2\n                  :cooks-into (cooked-item f)})\n  (register-item {:name (cooked-item f)\n                  :display (str \"Filé de \" (dict-get f :display))\n                  :picture fish-shape\n                  :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                  :food 6}))\n\n(register-item {:name \"fish:old_boot\" :display \"Bota Velha\"\n                :picture boot-shape :colors {:b [110 70 40] :s [60 40 20]}})\n\n(register-item {:name \"fish:coin\" :display \"Moeda de Peixe\"\n                :picture coin-shape :colors {:y [255 210 60] :o [255 250 200]}})\n\n;; ---------------------------------------------------------------\n;; Varas (um item com nome terminando em _rod joga a linha)\n;; ---------------------------------------------------------------\n\n(register-item {:name \"fish:lucky_rod\" :display \"Vara da Sorte\" :stack 1\n                :picture rod-shape :colors {:r [120 80 40] :s [230 230 230] :h [80 220 80]}})\n(register-item {:name \"fish:golden_rod\" :display \"Vara Dourada\" :stack 1\n                :picture rod-shape :colors {:r [255 200 40] :s [255 255 200] :h [255 120 40]}})\n\n;; Uma vara da sorte: igual à vara de pescar, com uma barra de ouro na linha.\n(register-recipe {:pattern [\"  s\" \" st\" \"s g\"]\n                  :key {:s \"core:stick\" :t \"core:string\" :g \"core:gold_ingot\"}\n                  :result \"fish:lucky_rod\"})\n\n;; Uma vara dourada: feita de ouro. Só a vara dourada pesca o Peixe Arco-Íris.\n(register-recipe {:pattern [\"  g\" \" gt\" \"g t\"]\n                  :key {:g \"core:gold_ingot\" :t \"core:string\"}\n                  :result \"fish:golden_rod\"})\n\n;; O bloco do balcão do mercado.\n(register-block {:name \"fish:market\" :display \"Mercado de Peixe\"\n                 :picture fish-shape\n                 :colors {:b [255 255 255] :w [200 230 255] :e [20 20 20] :t [255 255 255]}\n                 :color [40 120 200]})\n\n;; ---------------------------------------------------------------\n;; Onde você está pescando?\n;; ---------------------------------------------------------------\n\n(def water (block-id \"core:water\"))\n\n;; Pedra em cima da cabeça: uma caverna.\n(defn in-a-cave? (x y z)\n  (let (top (ground-height x z))\n    (and top (> top (+ y 3)))))\n\n;; Quatro blocos de água embaixo da boia: água funda.\n(defn deep? (x y z)\n  (every? (fn (d) (= (get-block x (- y d) z) water)) [1 2 3 4]))\n\n;; Neve ou gelo por perto.\n(def cold-blocks [(block-id \"core:snow\") (block-id \"core:snow_block\")\n                  (block-id \"core:ice\") (block-id \"core:packed_ice\")])\n(defn cold? (b) (some? (fn (c) (= b c)) cold-blocks))\n(defn snowy? (x y z)\n  (some? (fn (d)\n           (or (cold? (get-block (+ x (nth d 0)) y (+ z (nth d 1))))\n               (cold? (get-block (+ x (nth d 0)) (+ y 1) (+ z (nth d 1))))))\n         [[1 0] [-1 0] [0 1] [0 -1] [2 0] [-2 0] [0 2] [0 -2] [1 1] [-1 -1] [1 -1] [-1 1]]))\n\n(defn night? ()\n  (let (t (time-of-day)) (or (< t 0.23) (> t 0.77))))\n\n(defn fishing-place (x y z)\n  (cond (in-a-cave? x y z) \"cave\"\n        (snowy? x y z)     \"snow\"\n        (deep? x y z)      \"deep\"\n        true               \"pond\"))\n\n;; ---------------------------------------------------------------\n;; Quem morde a isca?\n;; ---------------------------------------------------------------\n\n;; Um dos peixes, sorteado pelo peso.\n(defn weighted-pick (things)\n  (let (total (sum (map (fn (f) (dict-get f :weight)) things)))\n    (loop (left things roll (random total))\n      (let (f (head left) w (dict-get f :weight))\n        (if (or (< roll w) (empty? (tail left)))\n            f\n            (recur (tail left) (- roll w)))))))\n\n(defn choose-fish (place rod)\n  (let (lucky (= rod \"fish:lucky_rod\")\n        golden (= rod \"fish:golden_rod\")\n        here (filter (fn (f)\n                       (let (p (dict-get f :place))\n                         (or (= p place)\n                             (and (= p \"night\") (night?))\n                             (and (= p \"golden\") golden))))\n                     fish-list))\n    ;; A vara da sorte deixa os peixes raros (peso menor que 5) três vezes mais fáceis.\n    (weighted-pick\n      (map (fn (f)\n             (if (and lucky (< (dict-get f :weight) 5))\n                 (dict-set f :weight (* 3 (dict-get f :weight)))\n                 f))\n           here))))\n\n(defn update-hud (player)\n  (set-hud player [(str \"Moedas de Peixe: \" (count-item player \"fish:coin\"))]))\n\n(defn on-fish-bite (player rod x y z)\n  (if (chance 8)\n      (do (tell player \"Você pescou uma Bota Velha. Eca!\")\n          \"fish:old_boot\")\n      (let (f (choose-fish (fishing-place x y z) rod))\n        (tell player (str \"Você pescou: \" (dict-get f :display) \"!\"))\n        (fish-item f))))\n\n;; ---------------------------------------------------------------\n;; O mercado de peixe\n;; ---------------------------------------------------------------\n\n;; /mercado monta uma barraquinha do seu lado.\n(defn build-market (player)\n  (let (p (player-pos player)\n        x (+ (nth p 0) 2) y (nth p 1) z (nth p 2))\n    (fill x (- y 1) z (+ x 2) (- y 1) (+ z 2) \"core:planks\")\n    (fill x y z (+ x 2) (+ y 3) (+ z 2) \"core:air\")\n    (set-block (+ x 1) y (+ z 1) \"fish:market\")\n    (for-each c [[0 0] [2 0] [0 2] [2 2]]\n      (fill (+ x (nth c 0)) y (+ z (nth c 1)) (+ x (nth c 0)) (+ y 2) (+ z (nth c 1)) \"core:fence\"))\n    (fill x (+ y 3) z (+ x 2) (+ y 3) (+ z 2) \"core:wool\")\n    (set-block (+ x 1) (+ y 2) (+ z 1) \"core:lantern\")\n    (confetti (+ x 1) (+ y 1) (+ z 1))\n    (tell player \"O Mercado de Peixe está aberto! Fique do lado dele e digite /vender\")))\n\n;; Tem um balcão de mercado perto do jogador?\n(def market (block-id \"fish:market\"))\n(defn near-market? (player)\n  (let (p (player-pos player))\n    (some? (fn (dx)\n             (some? (fn (dz)\n                      (some? (fn (dy)\n                               (= (get-block (+ (nth p 0) dx) (+ (nth p 1) dy) (+ (nth p 2) dz)) market))\n                             [-1 0 1]))\n                    [-3 -2 -1 0 1 2 3]))\n           [-3 -2 -1 0 1 2 3])))\n\n;; Vende todos os peixes que você carrega.\n(defn sell-everything (player)\n  (let (coins 0)\n    (for-each f fish-list\n      (let (raw (take-item player (fish-item f) 999)\n            cooked (take-item player (cooked-item f) 999))\n        (set! coins (+ coins (* raw (dict-get f :price))\n                             (* cooked 2 (dict-get f :price))))))\n    (set! coins (+ coins (take-item player \"fish:old_boot\" 999)))\n    (if (= coins 0)\n        (tell player \"Você não tem peixe para vender. Vá pescar!\")\n        (do (give-item player \"fish:coin\" coins)\n            (sound \"pop\")\n            (tell player (str \"Você vendeu seus peixes por \" coins \" Moedas de Peixe!\"))))\n    (update-hud player)))\n\n;; Coisas que o mercado vende: [o-quê preço nome].\n(def shop\n  [[\"fish:golden_rod\" 30 \"Vara Dourada (pesca o Peixe Arco-Íris!)\"]\n   [\"core:fishing_rod\" 3 \"Vara de pescar\"]\n   [\"core:bread\" 2 \"Pão\"]\n   [\"core:lantern\" 4 \"Lanterna\"]])\n\n(defn show-shop (player)\n  (tell player \"O mercado vende (digite /comprar e o número):\")\n  (for-each i (range (length shop))\n    (let (thing (nth shop i))\n      (tell player (str \"  \" (+ i 1) \". \" (nth thing 2) \" - \" (nth thing 1) \" moedas\")))))\n\n(defn buy (player number)\n  (let (thing (if (> number 0) (nth shop (- number 1)) nil))\n    (cond (nil? thing)\n          (tell player \"Não tem nada com esse número. Digite /loja\")\n          (< (count-item player \"fish:coin\") (nth thing 1))\n          (tell player (str \"Você precisa de \" (nth thing 1) \" Moedas de Peixe para isso.\"))\n          true\n          (do (take-item player \"fish:coin\" (nth thing 1))\n              (give-item player (nth thing 0))\n              (sound \"pop\")\n              (tell player (str \"Você comprou: \" (nth thing 2)))\n              (update-hud player)))))\n\n;; ---------------------------------------------------------------\n;; Comandos do chat\n;; ---------------------------------------------------------------\n\n;; \"2\" vira 2. O que não for número vira 0.\n(defn as-number (word)\n  (if (and word (str-matches word \"^[0-9]+$\")) (->number word) 0))\n\n(defn on-join (player name)\n  (tell player (str \"Olá, \" name \"! A Pesca Divertida está ligada. Digite /pescar para ver a ajuda.\"))\n  (update-hud player))\n\n(defn on-chat (player text)\n  (let (words (str-split (str-trim text) \" \")\n        command (head words))\n    (cond\n      (= command \"/pescar\")\n      (do (tell player \"/mercado monta um mercado, /vender vende seus peixes,\")\n          (tell player \"/loja mostra o que você pode comprar.\")\n          true)\n      (= command \"/mercado\") (do (build-market player) true)\n      (= command \"/vender\")\n      (do (if (near-market? player)\n              (sell-everything player)\n              (tell player \"Fique do lado de um Mercado de Peixe para vender. (/mercado monta um)\"))\n          true)\n      (= command \"/loja\") (do (show-shop player) true)\n      (= command \"/comprar\")\n      (do (if (near-market? player)\n              (buy player (as-number (nth words 1)))\n              (tell player \"Fique do lado de um Mercado de Peixe para comprar.\"))\n          true)\n      true nil)))\n", "8-feast": ";; Pesca Divertida: passo 8, o mod completo.\n;;\n;; Peixes de vários tipos, lugares para achar cada um, varas melhores, um mercado\n;; de peixe, comida, um banquete e um diário de pesca.\n\n;; ---------------------------------------------------------------\n;; Desenhos\n;; ---------------------------------------------------------------\n\n;; Todo peixe tem o mesmo desenho. Cada letra é uma cor:\n;; b = corpo, w = barriga, e = olho, t = rabo. Um ponto é transparente.\n(def fish-shape\n  [\"........\"\n   \"...bbb.t\"\n   \".bbbbbtt\"\n   \"bebbbbbt\"\n   \"bwwwwbtt\"\n   \".wwwww.t\"\n   \"........\"\n   \"........\"])\n\n(def boot-shape\n  [\"..bbb...\"\n   \"..bbb...\"\n   \"..bbb...\"\n   \"..bbbbb.\"\n   \"..bbbbbb\"\n   \"..ssssss\"])\n\n(def coin-shape\n  [\"..yyyy..\"\n   \".yyoyyy.\"\n   \"yyoyyyyy\"\n   \"yyoyyyyy\"\n   \"yyyyyyoy\"\n   \".yyyyoy.\"\n   \"..yyyy..\"])\n\n(def rod-shape\n  [\".......s\"\n   \"......ss\"\n   \".....r.s\"\n   \"....r..s\"\n   \"...r...s\"\n   \"..r....h\"\n   \".r......\"\n   \"r.......\"])\n\n;; ---------------------------------------------------------------\n;; Os peixes\n;; ---------------------------------------------------------------\n\n;; :weight diz quantas vezes ele morde a isca: 10 morde dez vezes mais que 1.\n;; :price é quantas moedas ele vale no mercado (peixe cozido vale o dobro).\n(def fish-list\n  [{:id \"perch\"   :display \"Perca-da-Poça\"     :body [240 170 60]  :belly [255 230 150] :place \"pond\"   :weight 10 :price 2}\n   {:id \"carp\"    :display \"Carpa-Bolha\"       :body [150 120 200] :belly [220 200 255] :place \"pond\"   :weight 6  :price 3}\n   {:id \"tuna\"    :display \"Atum Azulão\"       :body [40 80 180]   :belly [200 220 240] :place \"deep\"   :weight 6  :price 5}\n   {:id \"minnow\"  :display \"Lambari Brilhante\" :body [120 255 200] :belly [230 255 240] :place \"cave\"   :weight 6  :price 6}\n   {:id \"cod\"     :display \"Bacalhau Gelado\"   :body [180 220 255] :belly [255 255 255] :place \"snow\"   :weight 6  :price 6}\n   {:id \"star\"    :display \"Truta-Estrela\"     :body [40 40 90]    :belly [255 240 120] :place \"night\"  :weight 4  :price 8}\n   {:id \"rainbow\" :display \"Peixe Arco-Íris\"   :body [255 80 160]  :belly [120 220 255] :place \"golden\" :weight 1  :price 50}])\n\n(defn fish-item (f) (str \"fish:\" (dict-get f :id)))\n(defn cooked-item (f) (str \"fish:cooked_\" (dict-get f :id)))\n\n(for-each f fish-list\n  (register-item {:name (fish-item f)\n                  :display (dict-get f :display)\n                  :picture fish-shape\n                  :colors {:b (dict-get f :body) :w (dict-get f :belly)\n                           :e [20 20 20] :t (dict-get f :body)}\n                  :food 2\n                  :cooks-into (cooked-item f)})\n  (register-item {:name (cooked-item f)\n                  :display (str \"Filé de \" (dict-get f :display))\n                  :picture fish-shape\n                  :colors {:b [170 100 40] :w [220 160 90] :e [60 30 10] :t [140 80 30]}\n                  :food 6}))\n\n(register-item {:name \"fish:old_boot\" :display \"Bota Velha\"\n                :picture boot-shape :colors {:b [110 70 40] :s [60 40 20]}})\n\n(register-item {:name \"fish:coin\" :display \"Moeda de Peixe\"\n                :picture coin-shape :colors {:y [255 210 60] :o [255 250 200]}})\n\n;; ---------------------------------------------------------------\n;; Varas (um item com nome terminando em _rod joga a linha)\n;; ---------------------------------------------------------------\n\n(register-item {:name \"fish:lucky_rod\" :display \"Vara da Sorte\" :stack 1\n                :picture rod-shape :colors {:r [120 80 40] :s [230 230 230] :h [80 220 80]}})\n(register-item {:name \"fish:golden_rod\" :display \"Vara Dourada\" :stack 1\n                :picture rod-shape :colors {:r [255 200 40] :s [255 255 200] :h [255 120 40]}})\n\n;; Uma vara da sorte: igual à vara de pescar, com uma barra de ouro na linha.\n(register-recipe {:pattern [\"  s\" \" st\" \"s g\"]\n                  :key {:s \"core:stick\" :t \"core:string\" :g \"core:gold_ingot\"}\n                  :result \"fish:lucky_rod\"})\n\n;; Uma vara dourada: feita de ouro. Só a vara dourada pesca o Peixe Arco-Íris.\n(register-recipe {:pattern [\"  g\" \" gt\" \"g t\"]\n                  :key {:g \"core:gold_ingot\" :t \"core:string\"}\n                  :result \"fish:golden_rod\"})\n\n;; ---------------------------------------------------------------\n;; O banquete\n;; ---------------------------------------------------------------\n\n(register-item {:name \"fish:sandwich\" :display \"Sanduíche de Peixe\" :food 12 :heals 4\n                :picture [\"........\"\n                          \".bbbbbb.\"\n                          \"gggggggg\"\n                          \".ffffff.\"\n                          \"bbbbbbbb\"\n                          \".bbbbbb.\"]\n                :colors {:b [220 170 90] :g [90 200 70] :f [200 120 60]}})\n(register-recipe {:ingredients [\"core:bread\" \"fish:cooked_perch\"] :result \"fish:sandwich\"})\n\n(register-item {:name \"fish:feast\" :display \"Banquete do Pescador\" :food 20 :heals 20\n                :picture [\"..wwww..\"\n                          \".wyyyyw.\"\n                          \"wyoyyoyw\"\n                          \"wyyyyyyw\"\n                          \".wwwwww.\"]\n                :colors {:w [240 240 240] :y [250 200 90] :o [230 110 50]}})\n(register-recipe {:ingredients [\"fish:cooked_tuna\" \"fish:cooked_minnow\" \"fish:cooked_cod\"\n                                \"fish:cooked_star\" \"core:bread\"]\n                  :result \"fish:feast\"})\n\n;; O bloco do balcão do mercado.\n(register-block {:name \"fish:market\" :display \"Mercado de Peixe\"\n                 :picture fish-shape\n                 :colors {:b [255 255 255] :w [200 230 255] :e [20 20 20] :t [255 255 255]}\n                 :color [40 120 200]})\n\n;; ---------------------------------------------------------------\n;; Onde você está pescando?\n;; ---------------------------------------------------------------\n\n(def water (block-id \"core:water\"))\n\n;; Pedra em cima da cabeça: uma caverna.\n(defn in-a-cave? (x y z)\n  (let (top (ground-height x z))\n    (and top (> top (+ y 3)))))\n\n;; Quatro blocos de água embaixo da boia: água funda.\n(defn deep? (x y z)\n  (every? (fn (d) (= (get-block x (- y d) z) water)) [1 2 3 4]))\n\n;; Neve ou gelo por perto.\n(def cold-blocks [(block-id \"core:snow\") (block-id \"core:snow_block\")\n                  (block-id \"core:ice\") (block-id \"core:packed_ice\")])\n(defn cold? (b) (some? (fn (c) (= b c)) cold-blocks))\n(defn snowy? (x y z)\n  (some? (fn (d)\n           (or (cold? (get-block (+ x (nth d 0)) y (+ z (nth d 1))))\n               (cold? (get-block (+ x (nth d 0)) (+ y 1) (+ z (nth d 1))))))\n         [[1 0] [-1 0] [0 1] [0 -1] [2 0] [-2 0] [0 2] [0 -2] [1 1] [-1 -1] [1 -1] [-1 1]]))\n\n(defn night? ()\n  (let (t (time-of-day)) (or (< t 0.23) (> t 0.77))))\n\n(defn fishing-place (x y z)\n  (cond (in-a-cave? x y z) \"cave\"\n        (snowy? x y z)     \"snow\"\n        (deep? x y z)      \"deep\"\n        true               \"pond\"))\n\n;; ---------------------------------------------------------------\n;; Quem morde a isca?\n;; ---------------------------------------------------------------\n\n;; Um dos peixes, sorteado pelo peso.\n(defn weighted-pick (things)\n  (let (total (sum (map (fn (f) (dict-get f :weight)) things)))\n    (loop (left things roll (random total))\n      (let (f (head left) w (dict-get f :weight))\n        (if (or (< roll w) (empty? (tail left)))\n            f\n            (recur (tail left) (- roll w)))))))\n\n(defn choose-fish (place rod)\n  (let (lucky (= rod \"fish:lucky_rod\")\n        golden (= rod \"fish:golden_rod\")\n        here (filter (fn (f)\n                       (let (p (dict-get f :place))\n                         (or (= p place)\n                             (and (= p \"night\") (night?))\n                             (and (= p \"golden\") golden))))\n                     fish-list))\n    ;; A vara da sorte deixa os peixes raros (peso menor que 5) três vezes mais fáceis.\n    (weighted-pick\n      (map (fn (f)\n             (if (and lucky (< (dict-get f :weight) 5))\n                 (dict-set f :weight (* 3 (dict-get f :weight)))\n                 f))\n           here))))\n\n;; ---------------------------------------------------------------\n;; Seu diário de pesca (esquecido quando o mundo fecha)\n;; ---------------------------------------------------------------\n\n(def journals {})\n\n(defn journal (player)\n  (or (dict-get journals (str player)) []))\n\n(defn remember-catch (player f)\n  (let (seen (journal player) id (dict-get f :id))\n    (unless (some? (fn (s) (= s id)) seen)\n      (set! journals (dict-set journals (str player) (cons id seen)))\n      (show-title (str \"Peixe novo: \" (dict-get f :display) \"!\") 2 player)\n      (confetti-on player))))\n\n(defn confetti-on (player)\n  (let (p (player-pos player))\n    (confetti (nth p 0) (+ (nth p 1) 2) (nth p 2))))\n\n(defn update-hud (player)\n  (set-hud player\n           [(str \"Moedas de Peixe: \" (count-item player \"fish:coin\"))\n            (str \"Peixes achados: \" (length (journal player)) \" de \" (length fish-list))]))\n\n;; ---------------------------------------------------------------\n;; Mordeu a isca!\n;; ---------------------------------------------------------------\n\n(defn on-fish-bite (player rod x y z)\n  (if (chance 8)\n      (do (tell player \"Você pescou uma Bota Velha. Eca!\")\n          \"fish:old_boot\")\n      (let (f (choose-fish (fishing-place x y z) rod))\n        (tell player (str \"Você pescou: \" (dict-get f :display) \"!\"))\n        (remember-catch player f)\n        (update-hud player)\n        (fish-item f))))\n\n;; ---------------------------------------------------------------\n;; O mercado de peixe\n;; ---------------------------------------------------------------\n\n;; /mercado monta uma barraquinha do seu lado.\n(defn build-market (player)\n  (let (p (player-pos player)\n        x (+ (nth p 0) 2) y (nth p 1) z (nth p 2))\n    (fill x (- y 1) z (+ x 2) (- y 1) (+ z 2) \"core:planks\")\n    (fill x y z (+ x 2) (+ y 3) (+ z 2) \"core:air\")\n    (set-block (+ x 1) y (+ z 1) \"fish:market\")\n    (for-each c [[0 0] [2 0] [0 2] [2 2]]\n      (fill (+ x (nth c 0)) y (+ z (nth c 1)) (+ x (nth c 0)) (+ y 2) (+ z (nth c 1)) \"core:fence\"))\n    (fill x (+ y 3) z (+ x 2) (+ y 3) (+ z 2) \"core:wool\")\n    (set-block (+ x 1) (+ y 2) (+ z 1) \"core:lantern\")\n    (confetti (+ x 1) (+ y 1) (+ z 1))\n    (tell player \"O Mercado de Peixe está aberto! Fique do lado dele e digite /vender\")))\n\n;; Tem um balcão de mercado perto do jogador?\n(def market (block-id \"fish:market\"))\n(defn near-market? (player)\n  (let (p (player-pos player))\n    (some? (fn (dx)\n             (some? (fn (dz)\n                      (some? (fn (dy)\n                               (= (get-block (+ (nth p 0) dx) (+ (nth p 1) dy) (+ (nth p 2) dz)) market))\n                             [-1 0 1]))\n                    [-3 -2 -1 0 1 2 3]))\n           [-3 -2 -1 0 1 2 3])))\n\n;; Vende todos os peixes que você carrega.\n(defn sell-everything (player)\n  (let (coins 0)\n    (for-each f fish-list\n      (let (raw (take-item player (fish-item f) 999)\n            cooked (take-item player (cooked-item f) 999))\n        (set! coins (+ coins (* raw (dict-get f :price))\n                             (* cooked 2 (dict-get f :price))))))\n    (set! coins (+ coins (take-item player \"fish:old_boot\" 999)))\n    (if (= coins 0)\n        (tell player \"Você não tem peixe para vender. Vá pescar!\")\n        (do (give-item player \"fish:coin\" coins)\n            (sound \"pop\")\n            (tell player (str \"Você vendeu seus peixes por \" coins \" Moedas de Peixe!\"))))\n    (update-hud player)))\n\n;; Coisas que o mercado vende: [o-quê preço nome].\n(def shop\n  [[\"fish:golden_rod\" 30 \"Vara Dourada (pesca o Peixe Arco-Íris!)\"]\n   [\"core:fishing_rod\" 3 \"Vara de pescar\"]\n   [\"core:bread\" 2 \"Pão\"]\n   [\"core:lantern\" 4 \"Lanterna\"]])\n\n(defn show-shop (player)\n  (tell player \"O mercado vende (digite /comprar e o número):\")\n  (for-each i (range (length shop))\n    (let (thing (nth shop i))\n      (tell player (str \"  \" (+ i 1) \". \" (nth thing 2) \" - \" (nth thing 1) \" moedas\")))))\n\n(defn buy (player number)\n  (let (thing (if (> number 0) (nth shop (- number 1)) nil))\n    (cond (nil? thing)\n          (tell player \"Não tem nada com esse número. Digite /loja\")\n          (< (count-item player \"fish:coin\") (nth thing 1))\n          (tell player (str \"Você precisa de \" (nth thing 1) \" Moedas de Peixe para isso.\"))\n          true\n          (do (take-item player \"fish:coin\" (nth thing 1))\n              (give-item player (nth thing 0))\n              (sound \"pop\")\n              (tell player (str \"Você comprou: \" (nth thing 2)))\n              (update-hud player)))))\n\n;; ---------------------------------------------------------------\n;; Comandos do chat\n;; ---------------------------------------------------------------\n\n;; \"2\" vira 2. O que não for número vira 0.\n(defn as-number (word)\n  (if (and word (str-matches word \"^[0-9]+$\")) (->number word) 0))\n\n(defn on-join (player name)\n  (tell player (str \"Que bom te ver, \" name \"! A Pesca Divertida está ligada. Digite /pescar para ver a ajuda.\"))\n  (update-hud player))\n\n(defn on-chat (player text)\n  (let (words (str-split (str-trim text) \" \")\n        command (head words))\n    (cond\n      (= command \"/pescar\")\n      (do (tell player \"Pesque com uma vara de pescar: aponte para a água e clique com o botão direito.\")\n          (tell player \"/mercado monta um mercado, /vender vende seus peixes,\")\n          (tell player \"/loja mostra o que você pode comprar, /diario mostra seus peixes.\")\n          true)\n      (= command \"/mercado\") (do (build-market player) true)\n      (= command \"/vender\")\n      (do (if (near-market? player)\n              (sell-everything player)\n              (tell player \"Fique do lado de um Mercado de Peixe para vender. (/mercado monta um)\"))\n          true)\n      (= command \"/loja\") (do (show-shop player) true)\n      (= command \"/comprar\")\n      (do (if (near-market? player)\n              (buy player (as-number (nth words 1)))\n              (tell player \"Fique do lado de um Mercado de Peixe para comprar.\"))\n          true)\n      (= command \"/diario\")\n      (do (tell player (str \"Você já achou \" (length (journal player)) \" de \"\n                            (length fish-list) \" peixes:\"))\n          (for-each f fish-list\n            (when (some? (fn (s) (= s (dict-get f :id))) (journal player))\n              (tell player (str \"  \" (dict-get f :display)))))\n          true)\n      true nil)))\n"};
+
+// ---- Lisp highlighting: comments, strings, :keywords, brackets coloured by depth ----
+function esc(s) { return s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function highlight(src) {
+  let out = "", depth = 0, i = 0;
+  while (i < src.length) {
+    const c = src[i];
+    if (c === ";") { const j = src.indexOf("\n", i); const e = j < 0 ? src.length : j; out += '<span class="c-com">' + esc(src.slice(i, e)) + "</span>"; i = e; continue; }
+    if (c === '"') { let j = i + 1; while (j < src.length && src[j] !== '"') { if (src[j] === "\\") j++; j++; } out += '<span class="c-str">' + esc(src.slice(i, j + 1)) + "</span>"; i = j + 1; continue; }
+    if (c === ":" && /[a-z#]/i.test(src[i + 1] || "")) { const m = /^:[^\s()\[\]{}"]+/.exec(src.slice(i)); out += '<span class="c-kw">' + esc(m[0]) + "</span>"; i += m[0].length; continue; }
+    if ("([{".includes(c)) { out += '<span class="d' + (depth % 5) + '">' + c + "</span>"; depth++; i++; continue; }
+    if (")]}".includes(c)) { depth = Math.max(0, depth - 1); out += '<span class="d' + (depth % 5) + '">' + c + "</span>"; i++; continue; }
+    out += esc(c); i++;
+  }
+  return out;
+}
+function codeBlock(el, src) {
+  el.innerHTML = "";
+  const pre = document.createElement("pre"); pre.innerHTML = highlight(src);
+  const btn = document.createElement("button"); btn.className = "copy"; btn.type = "button"; btn.textContent = "Copiar";
+  btn.addEventListener("click", () => {
+    const done = () => { btn.textContent = "Copiado!"; setTimeout(() => btn.textContent = "Copiar", 1500); };
+    const select = () => { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selecionado: aperte Ctrl+C"; };
+    try { navigator.clipboard.writeText(src).then(done, select); } catch (e) { select(); }
+  });
+  el.append(pre, btn);
+}
+document.querySelectorAll(".code[data-src]").forEach(el => codeBlock(el, STEPS[el.dataset.src]));
+document.querySelectorAll(".code[data-snip]").forEach(el => codeBlock(el, el.dataset.snip));
+
+// ---- Pictures drawn with letters, like the game does it ----
+function draw(canvas, rows, colors) {
+  const g = canvas.getContext("2d"); g.clearRect(0, 0, 16, 16);
+  const h = rows.length, w = Math.max(0, ...rows.map(r => r.length));
+  if (!h || h > 16 || w > 16) return h > 16 || w > 16 ? "Grande demais: até 16 fileiras de até 16 letras." : "";
+  const scale = Math.max(1, Math.floor(16 / Math.max(w, h)));
+  const left = Math.floor((16 - w * scale) / 2), top = Math.floor((16 - h * scale) / 2);
+  let missing = "";
+  rows.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === "." || ch === " ") return;
+    const c = colors[ch]; if (!c) { missing = missing || ch; return; }
+    g.fillStyle = "rgb(" + c.join(",") + ")"; g.fillRect(left + x * scale, top + y * scale, scale, scale);
+  }));
+  return missing ? "A letra " + missing + " ainda não tem cor. Escolha uma aqui embaixo!" : "";
+}
+const SHAPE = ["........", "...bbb.t", ".bbbbbtt", "bebbbbbt", "bwwwwbtt", ".wwwww.t", "........", "........"];
+document.querySelectorAll("canvas[data-fish]").forEach(c => {
+  const fish = c.dataset.fish === "rainbow"
+    ? { b: [255, 80, 160], w: [120, 220, 255], e: [20, 20, 20], t: [255, 80, 160] }
+    : { b: [240, 170, 60], w: [255, 230, 150], e: [20, 20, 20], t: [240, 170, 60] };
+  draw(c, SHAPE, fish);
+});
+
+// The drawing pad
+const padRows = document.getElementById("pad-rows"), padColors = document.getElementById("pad-colors");
+const padCanvas = document.getElementById("pad-canvas"), padMsg = document.getElementById("pad-msg"), padCode = document.getElementById("pad-code");
+const colors = { b: [240, 170, 60], w: [255, 230, 150], e: [20, 20, 20], t: [240, 170, 60] };
+const hex = c => "#" + c.map(v => v.toString(16).padStart(2, "0")).join("");
+const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+let saved = null;
+try { saved = JSON.parse(localStorage.getItem("fishing-pad") || "null"); } catch (e) {}
+padRows.value = (saved && saved.rows) || SHAPE.join("\n");
+if (saved && saved.colors) Object.assign(colors, saved.colors);
+function letters() { return [...new Set(padRows.value.replace(/[.\s]/g, ""))].filter(ch => /[a-z]/i.test(ch)).slice(0, 12); }
+function renderColors() {
+  const want = letters();
+  want.forEach(ch => { if (!colors[ch]) colors[ch] = [Math.random() * 255 | 0, Math.random() * 255 | 0, Math.random() * 255 | 0]; });
+  const have = [...padColors.querySelectorAll("input")].map(i => i.dataset.letter);
+  if (have.join() === want.join()) return;
+  padColors.innerHTML = "";
+  want.forEach(ch => {
+    const id = "pad-color-" + ch.charCodeAt(0);
+    const label = document.createElement("label"); label.htmlFor = id; label.textContent = ch;
+    const input = document.createElement("input"); input.type = "color"; input.id = id; input.dataset.letter = ch; input.value = hex(colors[ch]);
+    input.addEventListener("input", () => { colors[ch] = rgb(input.value); update(); });
+    label.append(input); padColors.append(label);
+  });
+}
+function update() {
+  renderColors();
+  const rows = padRows.value.split("\n").map(r => r.replace(/\s+$/, "")).filter((r, i, a) => r.length || a.slice(i).some(x => x.trim()));
+  padMsg.textContent = draw(padCanvas, rows, colors) || "Até 16 fileiras de até 16 letras.";
+  const used = letters();
+  const colorText = used.map(ch => ":" + ch + " [" + colors[ch].join(" ") + "]").join(" ");
+  const picture = rows.map((r, i) => (i ? "                          " : "") + '"' + r.replace(/ /g, ".") + '"').join("\n");
+  codeBlock(padCode, '(register-item {:name "fish:perch"\n                :display "Perca-da-Poça"\n                :picture [' + picture + ']\n                :colors {' + colorText + '}\n                :food 2})');
+  try { localStorage.setItem("fishing-pad", JSON.stringify({ rows: padRows.value, colors })); } catch (e) {}
+}
+padRows.addEventListener("input", update);
+update();
+</script>
+</body>
+</html>
