@@ -97,6 +97,13 @@
       That's what makes it safe to try mods other people made.</p>
 
     <!-- ============================================================ -->
+    <div class="tip">
+      <p><strong>For younger modders:</strong> a mod can also be one text file in EELisp, with
+        no Rust and nothing to install. <a href="fishing.html">Fishing Fun</a> is a step-by-step
+        tutorial that a 10-year-old can follow: fish you draw yourself, places to fish, rods, a
+        fish market and cooking.</p>
+    </div>
+
     <h2 id="setup">2. What you need</h2>
     <ol class="steps">
       <li>The game's source and Rust, as in <a href="manual.html#install">Getting started</a>.</li>
@@ -871,6 +878,9 @@ mod tests {
 
     <!-- ============================================================ -->
     <h2 id="abi">13. Other languages</h2>
+    <p>A mod can also be an EELisp script: put <code>name.el</code> in the mods folder and
+      the game runs it with its EELisp runner, in the same sandbox. The
+      <a href="fishing.html">Fishing Fun tutorial</a> shows how.</p>
     <p>Rust is the easiest way, because the API is a Rust crate. But a mod is just a WebAssembly
       module, so any language that compiles to WebAssembly can make one, with a bit more work.
       The contract:</p>
