@@ -89,7 +89,7 @@
         animals that
         wander, follow food and have babies.</li>
       <li><strong>Game modes:</strong> all of the above together make a game with rules. The
-        whole Splat Squad team game is a mod.</li>
+        whole Splat Squad team game is a mod, and so is Build Contest.</li>
     </ul>
     <p>Mods run <strong>on the server</strong> only. When friends join your world, their game
       gets your new blocks and tools automatically: they don't need to install anything.</p>
@@ -114,6 +114,7 @@ cd ourcraft/mods</code></pre></li>
         <tr><td><code>mods/paint_blocks/</code></td><td>A small example: paint blocks and <code>/rainbow</code>.</td></tr>
         <tr><td><code>mods/snow_fun/</code></td><td>The tutorial mod from this guide, finished.</td></tr>
         <tr><td><code>mods/team_shooter/</code></td><td>Splat Squad: a big example of a game mode.</td></tr>
+        <tr><td><code>mods/build_contest/</code></td><td>Build Contest: a game mode with rounds, plots, a timer on the HUD and voting with tools. A good one to read after Snow Fun.</td></tr>
         <tr><td><code>mods/build.sh</code></td><td>Builds every mod into <code>mods/dist/</code>.</td></tr>
         <tr><td><code>crates/mod_api/</code></td><td>The mod API: every event and function.</td></tr>
       </tbody>
@@ -141,7 +142,7 @@ ourcraft_mod_api = { path = &quot;../../crates/mod_api&quot; }</code></pre>
       <li>Add it to the <code>members</code> list in <code>mods/Cargo.toml</code>:
         <pre><code>[workspace]
 resolver = &quot;3&quot;
-members = [&quot;paint_blocks&quot;, &quot;snow_fun&quot;, &quot;team_shooter&quot;, &quot;hello_mod&quot;]</code></pre></li>
+members = [&quot;build_contest&quot;, &quot;paint_blocks&quot;, &quot;snow_fun&quot;, &quot;team_shooter&quot;, &quot;hello_mod&quot;]</code></pre></li>
       <li>Create <code>hello_mod/src/lib.rs</code>:
         <pre><code>use ourcraft_mod_api::guest::{self, Mod};
 use ourcraft_mod_api::{Event, EventReply};

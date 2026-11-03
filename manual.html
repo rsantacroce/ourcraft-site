@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ourcraft Manual</title>
-  <meta name="description" content="How to play Ourcraft and the Splat Squad team game: controls, building, multiplayer, servers, settings and mods.">
+  <meta name="description" content="How to play Ourcraft, the Splat Squad team game and Build Contest: controls, building, survival, villages, goals, skins, multiplayer, servers, settings and mods.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,17 +41,20 @@
           <li><a href="#inventory">Hotbar and inventory</a></li>
           <li><a href="#modes">Creative and survival</a></li>
           <li><a href="#world">The world</a></li>
+          <li><a href="#villages">Villages</a></li>
           <li><a href="#blocks">Blocks</a></li>
         </ol>
       </li>
       <li><a href="#survival">Survival guide</a>
         <ol>
           <li><a href="#first-day">Your first day</a></li>
+          <li><a href="#goals">Goals</a></li>
           <li><a href="#tools">Tools and ores</a></li>
           <li><a href="#recipes">Crafting recipes</a></li>
           <li><a href="#furnace">The furnace</a></li>
           <li><a href="#health">Health and food</a></li>
           <li><a href="#monsters">Monsters at night (and in caves)</a></li>
+          <li><a href="#weapons">Swords, slingshot and shield</a></li>
           <li><a href="#build-more">Doors, stairs, chests, signs, beds</a></li>
           <li><a href="#farming">Farming</a></li>
           <li><a href="#colours">Colours</a></li>
@@ -75,8 +78,13 @@
           <li><a href="#squad-tips">Tips</a></li>
         </ol>
       </li>
+      <li><a href="#build-contest">Playing Build Contest</a></li>
       <li><a href="#paint">The Paint Blocks mod</a></li>
-      <li><a href="#chat">Chat and commands</a></li>
+      <li><a href="#chat">Chat and commands</a>
+        <ol>
+          <li><a href="#build-tools">Building tools</a></li>
+        </ol>
+      </li>
       <li><a href="#settings">Settings</a></li>
       <li><a href="#servers">Running a server</a></li>
       <li><a href="#mods">Mods</a></li>
@@ -88,7 +96,7 @@
 
   <article>
     <h1>Ourcraft Manual</h1>
-    <p>Everything you need to play Ourcraft and its team game, Splat Squad. New players can
+    <p>Everything you need to play Ourcraft and its game modes, Splat Squad and Build Contest. New players can
       start with <a href="#install">Getting started</a> and <a href="#controls">Controls</a>.</p>
 
     <!-- ============================================================ -->
@@ -117,7 +125,9 @@ cd ourcraft</code></pre></li>
     <img src="images/menu.jpg" alt="The main menu" width="1280" height="720" loading="lazy">
     <ul>
       <li><strong>Play</strong> lists your worlds. Click one to continue it, or
-        <strong>+ New world</strong> to make one.</li>
+        <strong>+ New world</strong> to make one. <em>Sort</em> orders them by when you last
+        played, by name, or by when they were made, and each has a <em>Delete</em> button (it
+        asks first: a deleted world is gone for good).</li>
       <li><strong>Join a friend</strong> shows games on your home network, or lets you type an
         address.</li>
       <li><strong>Settings</strong>: your name, view distance, sound and more (see
@@ -129,8 +139,9 @@ cd ourcraft</code></pre></li>
       <li><strong>Name</strong>: anything you like, or press <em>Pick a random name</em>.</li>
       <li><strong>Seed</strong> (optional): a number that decides what the land looks like. The
         same seed always makes the same world, so you can share good ones with friends.</li>
-      <li><strong>Game</strong>: <em>Build</em> for free play, or <em>Splat Squad</em> for the
-        <a href="#splat-squad">team game</a>.</li>
+      <li><strong>Game</strong>: <em>Build</em> for free play, <em>Splat Squad</em> for the
+        <a href="#splat-squad">team game</a>, or <em>Build Contest</em> to
+        <a href="#build-contest">build a theme and vote</a>. Game modes are always creative.</li>
       <li><strong>Creative / Survival</strong> (Build only): see
         <a href="#modes">Creative and survival</a>.</li>
       <li><strong>Friends on my network can join</strong>: switch on to let people on the same
@@ -163,7 +174,8 @@ cd ourcraft</code></pre></li>
         <tr><td>Camera: first person → behind you → in front of you</td><td><kbd>F5</kbd></td><td>D-pad down</td><td><em>View</em> button</td></tr>
         <tr><td>Choose a hotbar slot</td><td><kbd>1</kbd>–<kbd>9</kbd> or mouse wheel (the wheel can be switched off in <a href="#settings">Settings</a>)</td><td>Bumpers</td><td>Tap the slot</td></tr>
         <tr><td>Inventory</td><td><kbd>E</kbd></td><td>Y</td><td><em>Bag</em> button</td></tr>
-        <tr><td>Chat / command</td><td><kbd>Enter</kbd> / <kbd>/</kbd></td><td></td><td></td></tr>
+        <tr><td>Chat / command</td><td><kbd>Enter</kbd> / <kbd>/</kbd></td><td></td><td><em>Chat</em> button (the on-screen keyboard comes up)</td></tr>
+        <tr><td>Flick a pebble (slingshot in hand)</td><td>Right click</td><td>Left trigger</td><td>Quick tap</td></tr>
         <tr><td>Pause menu</td><td><kbd>Esc</kbd></td><td></td><td><em>Menu</em> button</td></tr>
         <tr><td>Show or hide info text</td><td><kbd>F3</kbd></td><td></td><td></td></tr>
         <tr><td>View distance</td><td><kbd>[</kbd> and <kbd>]</kbd></td><td></td><td>In Settings</td></tr>
@@ -241,12 +253,21 @@ cd ourcraft</code></pre></li>
       <li><strong>Ores</strong> sparkle in the stone underground: coal near the surface, iron
         deeper, gold and diamonds near the bottom, where the deepest caves are full of lava.</li>
       <li><strong>Animals</strong> graze on the grass: sheep, pigs, cows and chickens.</li>
+      <li><strong>Villages</strong> sit on open plains, deserts and snowfields (see below).</li>
       <li><strong>Weather:</strong> now and then it rains (or snows, where it's snowy), and
         clouds drift by.</li>
       <li><strong>It never ends:</strong> new land appears as you travel. Far-off land fades into
         the sky; raise the view distance to see further.</li>
       <li><strong>Saving</strong> is automatic every 30 seconds, and again when you quit.</li>
     </ul>
+
+    <h3 id="villages">Villages</h3>
+    <p>Out on open plains, deserts and snowy lands you'll come across little villages: four to
+      seven houses round a <strong>well</strong>, joined by gravel paths, with a lamp post that
+      lights the square at night. Houses are built from oak in the plains, sandstone in the
+      desert and pine in the snow. Each one has a door, windows, a bed, a crafting table and a
+      torch, so a village is a handy place to spend your first night. No trees grow inside a
+      village. Finding one is one of the <a href="#goals">goals</a>.</p>
 
     <h3 id="blocks">Blocks</h3>
     <div class="table-wrap">
@@ -302,6 +323,20 @@ cd ourcraft</code></pre></li>
         planks) so you can sleep through it.</li>
     </ol>
 
+    <h3 id="goals">Goals</h3>
+    <p>In survival, nineteen gentle goals show you what to try next, in order:</p>
+    <ol class="steps">
+      <li>Get some wood, make planks, a crafting table and a wooden pickaxe.</li>
+      <li>Make a stone pickaxe, a torch and a sword. Find a village.</li>
+      <li>Build a furnace and smelt some iron. Bop a monster away.</li>
+      <li>Make a bed and sleep in it. Bake bread and catch a fish. Ride a pig.</li>
+      <li>Find a diamond, make something sparkly, and visit the Cloud Isles.</li>
+    </ol>
+    <p>Each goal you reach gets a cheer, a big message and a hint for the next one in chat.
+      Type <code>/goals</code> to see what's done and what's still to do. Goals only count in
+      survival (creative hands you everything), and they're remembered for each player in each
+      world.</p>
+
     <h3 id="tools">Tools and ores</h3>
     <ul>
       <li><strong>Pickaxes</strong> are for stone, ores and bricks; <strong>axes</strong> for
@@ -331,6 +366,7 @@ cd ourcraft</code></pre></li>
         <tr><td>Pickaxe</td><td><code>XXX / .#. / .#.</code></td><td rowspan="3">X = planks, cobblestone, iron ingot or diamond; # = stick</td></tr>
         <tr><td>Axe</td><td><code>XX / X# / .#</code></td></tr>
         <tr><td>Shovel</td><td><code>X / # / #</code></td></tr>
+        <tr><td>Sword</td><td><code>X / X / #</code></td><td>X = planks, cobblestone, iron ingot or diamond; # = stick</td></tr>
         <tr><td>Furnace</td><td><code>CCC / C.C / CCC</code></td><td>C = cobblestone</td></tr>
         <tr><td>4 Torches</td><td><code>C / #</code></td><td>C = coal, # = stick</td></tr>
         <tr><td>Chest</td><td><code>PPP / P.P / PPP</code></td><td>P = planks</td></tr>
@@ -386,12 +422,36 @@ cd ourcraft</code></pre></li>
       (a grumpy teal fellow in purple shorts) and the <strong>Bouncer</strong> (a purple jelly
       that hops), the <strong>Puff</strong> (a little floating cloud) and the <strong>Rumble</strong>
       (a slow rock with glowing eyes). They follow you and bonk you for a heart or half a heart. Bop them back with
-      left click: a few hits (fewer with a tool) and they vanish in confetti, sometimes leaving
+      left click: a few hits (fewer with a tool or a <a href="#weapons">sword</a>) and they vanish in confetti, sometimes leaving
       a lump of coal. At sunrise the ones outside puff away (cave monsters stay in their
       caves). They never appear where torches or lamps light things up, so light your house
       and your mine, and a bed skips the night.</p>
     <p>Don't want monsters at all? Type <code>/peaceful</code>: no monsters and no hunger, for
       the whole world (type it again to switch back).</p>
+
+    <h3 id="weapons">Swords, slingshot and shield</h3>
+    <p>Monsters are only ever bopped away: they puff into confetti, nothing worse. Some things
+      help:</p>
+    <ul>
+      <li><strong>Swords</strong> in wood, stone, iron and diamond bop hardest. A bop by hand
+        takes 2 off a monster, a tool a bit more, and a sword 5 (wood) up to 8 (diamond).
+        Swords don't help with digging.</li>
+      <li>The <strong>slingshot</strong> flicks a pebble where you aim (right click), up to 24
+        blocks, twice a second at most. It bops whatever it hits, like a bop by hand: monsters
+        lose a little, animals just hop off. It needs no ammo.</li>
+      <li>A <strong>shield</strong> in your hand halves monsters' bonks, on top of any
+        <a href="#adventure">armour</a>.</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Makes</th><th>Shape</th><th>With</th></tr></thead>
+      <tbody>
+        <tr><td>Sword</td><td><code>X / X / #</code></td><td>X = planks, cobblestone, iron ingot or diamond; # = stick</td></tr>
+        <tr><td>Slingshot</td><td><code>#S# / .#.</code></td><td># = stick, S = string</td></tr>
+        <tr><td>Shield</td><td><code>PIP / PPP / .P.</code></td><td>P = planks, I = iron ingot</td></tr>
+      </tbody>
+    </table>
+    </div>
 
     <h3 id="build-more">Doors, stairs, chests, signs, beds</h3>
     <ul>
@@ -841,7 +901,36 @@ cd ourcraft</code></pre></li>
     </ul>
 
     <!-- ============================================================ -->
-    <h2 id="paint">8. The Paint Blocks mod</h2>
+    <h2 id="build-contest">8. Playing Build Contest</h2>
+    <p>A building game for friends (or on your own). Everyone gets a plot and the same secret
+      <strong>theme</strong>, like <em>A rocket ship</em>, <em>A house for a cat</em> or
+      <em>A tower as tall as you can</em>. When the time's up, everyone visits each build and
+      votes. The most points wins!</p>
+    <ol class="steps">
+      <li>Main menu → <strong>Play</strong> → <strong>+ New world</strong>, click <em>Game</em>
+        until it says <strong>Build Contest</strong>, switch on <strong>Friends on my network
+        can join</strong> and press <strong>Create and play</strong>. Eight plots with coloured
+        borders appear on flat ground next to where you start.</li>
+      <li>When everyone's in, type <code>/start</code> (or <code>/start 3</code> for three
+        minutes of building; five is normal). If nobody does, a round starts by itself a minute
+        after the first player joins.</li>
+      <li>Everyone is taken to their own plot and the theme appears. Build it! You have endless
+        blocks, you can fly, and the top right shows the theme and the time left. You can only
+        build on your own plot during a round.</li>
+      <li>When the time's up, everyone visits each build in turn. Pick a vote badge from your
+        hotbar, from <em>Meh</em> (1 point) through <em>OK</em>, <em>Good</em> and
+        <em>Great</em> to <em>WOW!</em> (5 points), and click. You can change your mind while
+        you're there, but you can't vote for your own build. Once everyone has voted, the game
+        moves on.</li>
+      <li>The build with the most points wins, with confetti, and everyone gathers round it.
+        Type <code>/start</code> to play again: the plots are cleared for the next round.</li>
+    </ol>
+    <p>Playing alone? There's nobody to vote, so everyone wins: it's a fun way to get a theme
+      and a timer. Build Contest worlds can also run on a server with
+      <code>--mode build_contest</code>. Type <code>/theme</code> any time to see the theme again.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="paint">9. The Paint Blocks mod</h2>
     <img src="images/rainbow.jpg" alt="A rainbow made of blocks" width="1600" height="900" loading="lazy">
     <p>Also included with the game. It adds eight bright <strong>paint</strong> blocks (red,
       orange, yellow, lime, blue, purple, pink, white) and a glowing <strong>Rainbow Lamp</strong>.
@@ -850,24 +939,56 @@ cd ourcraft</code></pre></li>
       air, so it never covers anyone's buildings.</p>
 
     <!-- ============================================================ -->
-    <h2 id="chat">9. Chat and commands</h2>
+    <h2 id="chat">10. Chat and commands</h2>
     <p>Press <kbd>Enter</kbd>, type, and press <kbd>Enter</kbd> again to send (<kbd>Esc</kbd>
       cancels). Messages fade after a few seconds. Lines starting with <code>/</code> are
       commands:</p>
     <ul>
       <li><code>/help</code>: list commands.</li>
+      <li><code>/spawn</code> (or <code>/home</code>): stuck? Go back to your bed, or the start of
+        the world. Works in any mode. (If you end up inside a block, the game lifts you out on
+        its own after a second.)</li>
+      <li><code>/goals</code>: what you've done and what to try next (see <a href="#goals">Goals</a>).</li>
       <li><code>/time day</code> and <code>/time night</code>: change the time for everyone.</li>
       <li><code>/weather rain</code> and <code>/weather clear</code>: change the weather.</li>
       <li><code>/peaceful</code>: switch monsters and hunger off (or back on) for the world.</li>
       <li><code>/summon sheep</code> (or pig, cow, chicken): call an animal over, in creative.</li>
+      <li><code>/pos1</code>, <code>/fill</code>, <code>/copy</code>, <code>/paste</code>…: the
+        <a href="#build-tools">building tools</a>, in creative.</li>
       <li><code>/tp x y z</code>: jump to a place (like <code>/tp 0 80 0</code>), in creative.</li>
       <li><code>/snowman</code>, <code>/snowballs</code>: the Snow Fun mod.</li>
       <li><code>/rainbow</code>: Paint Blocks mod.</li>
       <li><code>/class</code>, <code>/team</code>, <code>/score</code>: Splat Squad.</li>
+      <li><code>/start</code>, <code>/theme</code>: <a href="#build-contest">Build Contest</a>.</li>
     </ul>
+    <p>On phones and tablets, tap the <em>Chat</em> button (top left, next to <em>Menu</em>) and
+      the on-screen keyboard comes up; chat moves to the top of the screen so the keyboard
+      doesn't cover it. Tap <em>Chat</em> again to close it without sending.</p>
+
+    <h3 id="build-tools">Building tools</h3>
+    <p>In creative, these chat commands change lots of blocks at once. Look at a block and type
+      <code>/pos1</code>, look at another and type <code>/pos2</code>: that marks a box. Leave out
+      the block name to use the one you're holding.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>/pos1</code>, <code>/pos2</code></td><td>Mark the corners of a box at the block you're looking at</td></tr>
+        <tr><td><code>/fill [block]</code>, <code>/clear</code></td><td>Fill the box (<code>/fill stone</code>, <code>/fill oak_planks</code>), or empty it</td></tr>
+        <tr><td><code>/walls [block]</code>, <code>/box [block]</code></td><td>Just the four walls, or a hollow box with a floor and roof</td></tr>
+        <tr><td><code>/replace old [new]</code></td><td>Swap one block for another inside the box</td></tr>
+        <tr><td><code>/sphere size [block]</code></td><td>A ball (size 1 to 32) round the block you're looking at</td></tr>
+        <tr><td><code>/copy</code>, <code>/paste</code></td><td>Copy the box, walk somewhere else and paste it in the same place around you (<code>/paste solid</code> leaves out the air)</td></tr>
+        <tr><td><code>/undo</code></td><td>Take back the last change (up to 8)</td></tr>
+        <tr><td><code>/sel</code>, <code>/build</code></td><td>Show the box's size, or help</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Chests, signs, item frames and banners are never overwritten. One command can change up to
+      about 260,000 blocks.</p>
 
     <!-- ============================================================ -->
-    <h2 id="settings">10. Settings</h2>
+    <h2 id="settings">11. Settings</h2>
     <div class="table-wrap">
     <table>
       <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
@@ -882,7 +1003,8 @@ cd ourcraft</code></pre></li>
         <tr><td>Show info text</td><td>The FPS, position and help text in the corner (also <kbd>F3</kbd>)</td></tr>
         <tr><td>Middle click picks block</td><td>On: middle click copies the block you're looking at into your hand (switching the hotbar slot). Switch it off if you keep doing it by accident</td></tr>
         <tr><td>Mouse wheel changes slot</td><td>On: scrolling the mouse wheel moves along the hotbar. Switch it off if the wheel keeps changing what you're holding; the number keys <kbd>1</kbd>–<kbd>9</kbd> still work</td></tr>
-        <tr><td>Skin</td><td>How you look: <span>&lt;</span> and <span>&gt;</span> go through the skins (see below)</td></tr>
+        <tr><td>Skin</td><td>How you look: <span>-</span> and <span>+</span> go through the skins, with a little picture of the one you're wearing (see below)</td></tr>
+        <tr><td>Make your own skin</td><td>Opens the <a href="#skins">skin maker</a></td></tr>
       </tbody>
     </table>
     </div>
@@ -890,6 +1012,14 @@ cd ourcraft</code></pre></li>
     <p>Pick how you look under <strong>Settings → Skin</strong>. There are six built-in skins:
       Explorer, Miner, Gardener, Knight, Astronaut and Robot. Press <kbd>F5</kbd> in a game to
       see yourself.</p>
+    <p><strong>Make your own:</strong> press <em>Make your own skin</em> in Settings. Use
+      <span>-</span> and <span>+</span> to choose your skin tone, hair colour, short or long
+      hair, eye colour, a face (smile, grin, surprised, freckles or glasses), shirt, trousers,
+      shoes and a hat (a hard hat, straw hat, knight's helmet or space helmet). The big picture
+      shows how you look as you go, and <em>Surprise me!</em> picks everything at random.
+      Press <em>Done</em> and you're wearing it. Your made skin is kept even if you pick
+      another one, and shows in the skin list as "Made by you". Everyone you play with sees
+      it.</p>
     <p><strong>Your own skin:</strong> put a 64 × 64 skin picture (PNG, the classic block-game
       layout, so skin files you already have work; older 64 × 32 ones too) in the
       <code>skins</code> folder next to <code>settings.txt</code>. It shows up in the Skin list.
@@ -903,7 +1033,7 @@ cd ourcraft</code></pre></li>
     </ul>
 
     <!-- ============================================================ -->
-    <h2 id="servers">11. Running a server</h2>
+    <h2 id="servers">12. Running a server</h2>
     <p>A dedicated server keeps a world running for everyone, with no window and very little
       memory.</p>
     <pre><code>cargo run --release -p ourcraft_server --bin ourcraft-server -- --world world</code></pre>
@@ -914,6 +1044,7 @@ cd ourcraft</code></pre></li>
         <tr><td><code>--world NAME</code></td><td>World folder under <code>./worlds/</code> (created if new)</td></tr>
         <tr><td><code>--port 41700</code></td><td>UDP port to listen on</td></tr>
         <tr><td><code>--mode team_shooter</code></td><td>Make a new world a Splat Squad world</td></tr>
+        <tr><td><code>--mode build_contest</code></td><td>Make a new world a Build Contest world</td></tr>
         <tr><td><code>--survival</code></td><td>Make a new world survival instead of creative</td></tr>
         <tr><td><code>--seed N</code></td><td>Seed for a new world</td></tr>
         <tr><td><code>--name "…"</code>, <code>--motd "…"</code></td><td>Server name and welcome message</td></tr>
@@ -927,11 +1058,11 @@ cd ourcraft</code></pre></li>
       <em>Join a friend</em> screen automatically.</p>
 
     <!-- ============================================================ -->
-    <h2 id="mods">12. Mods</h2>
+    <h2 id="mods">13. Mods</h2>
     <p>Mods are small programs (WebAssembly files ending in <code>.wasm</code>) that add blocks,
-      gadgets and game modes. Ourcraft comes with three: <a href="#paint">Paint Blocks</a>,
-      <a href="#splat-squad">Splat Squad</a>, and Snow Fun (type <code>/snowman</code> or
-      <code>/snowballs</code> in a building world).</p>
+      gadgets and game modes. Ourcraft comes with four: <a href="#paint">Paint Blocks</a>,
+      <a href="#splat-squad">Splat Squad</a>, <a href="#build-contest">Build Contest</a>, and
+      Snow Fun (type <code>/snowman</code> or <code>/snowballs</code> in a building world).</p>
     <ul>
       <li><strong>Adding a mod:</strong> put its <code>.wasm</code> file in the <code>mods</code>
         folder next to your worlds folder (or next to a dedicated server), and restart.</li>
@@ -945,7 +1076,7 @@ cd ourcraft</code></pre></li>
     </ul>
 
     <!-- ============================================================ -->
-    <h2 id="mobile">13. iPad and Android</h2>
+    <h2 id="mobile">14. iPad and Android</h2>
     <img src="images/ipad.jpg" alt="Ourcraft on an iPad" width="1600" height="1102" loading="lazy">
     <ul>
       <li><strong>Moving:</strong> put your thumb anywhere on the left side and drag. Push all
@@ -953,8 +1084,11 @@ cd ourcraft</code></pre></li>
       <li><strong>Looking:</strong> drag anywhere on the right side.</li>
       <li><strong>Building:</strong> a quick tap places a block; press and hold to break.</li>
       <li><strong>Buttons:</strong> <em>Jump</em>, <em>Down</em>, <em>Fly</em> (creative),
-        <em>Bag</em> (inventory, top right) and <em>Menu</em> (top left). Tap a hotbar slot to
-        select it.</li>
+        <em>Bag</em> (inventory) and <em>View</em> (top right), and <em>Menu</em> and
+        <em>Chat</em> (top left). Tap a hotbar slot to select it.</li>
+      <li><strong>Typing:</strong> tap <em>Chat</em>, or a box like a world's name or seed, and
+        the on-screen keyboard comes up. What you're typing shows at the top of the screen, above
+        the keyboard. Press the keyboard's Return to send or finish.</li>
       <li><strong>Eating:</strong> with food in your hand (survival), an <em>Eat</em> button
         appears next to Jump: hold it.</li>
       <li><strong>Signs:</strong> a keyboard appears on the screen when you write on one.</li>
@@ -963,11 +1097,9 @@ cd ourcraft</code></pre></li>
     <p><strong>Installing:</strong> iPad/iPhone builds come from the Xcode project in
       <code>mobile/ios</code>; Android builds from <code>mobile/android/build.sh</code>. See the
       project's README for details.</p>
-    <div class="note">Typing isn't supported on phones and tablets yet: use <em>Pick a random
-      name</em> for new worlds, and the network list to join friends.</div>
 
     <!-- ============================================================ -->
-    <h2 id="parents">14. For parents</h2>
+    <h2 id="parents">15. For parents</h2>
     <ul>
       <li><strong>No accounts, no ads, no purchases.</strong> Nothing to sign up for.</li>
       <li><strong>Private by default.</strong> Single-player worlds are on your device only.
@@ -975,8 +1107,11 @@ cd ourcraft</code></pre></li>
         network) or you run a server.</li>
       <li><strong>Gentle combat.</strong> Splat Squad uses paint and confetti: no blood, no
         weapons that look real. Survival monsters are silly cartoons that "bonk"; when hearts
-        run out you faint and wake up in bed, keeping everything. No swords, and animals can't
-        be hurt.</li>
+        run out you faint and wake up in bed, keeping everything. Swords and the slingshot only
+        "bop" monsters into confetti, and animals can't be hurt: a bop just makes them hop
+        away.</li>
+      <li><strong>Goals for new players.</strong> In survival, gentle goals (like "Make a
+        crafting table") show what to try next, with a hint each time.</li>
       <li><strong>Peaceful worlds:</strong> type <code>/peaceful</code> to switch off monsters
         and hunger, or simply play in creative.</li>
       <li><strong>Chat filter</strong> for rude words, on by default (Settings).</li>
@@ -985,7 +1120,7 @@ cd ourcraft</code></pre></li>
     </ul>
 
     <!-- ============================================================ -->
-    <h2 id="help">15. Problems and questions</h2>
+    <h2 id="help">16. Problems and questions</h2>
     <h3>The game feels slow</h3>
     <p>Lower the view distance in Settings (or press <kbd>[</kbd>). Make sure you started it with
       <code>--release</code>; without it the game runs much slower.</p>
